@@ -1,0 +1,40 @@
+2026-06-06 15:12:21,897 - openevolve.controller - INFO - Logging to openevolve_output/logs/openevolve_20260606_151221.log
+2026-06-06 15:12:21,917 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-06-06 15:12:22,002 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: anthropic/claude-haiku-4-5
+2026-06-06 15:12:22,003 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: anthropic/claude-haiku-4-5 (weight: 1.00)
+2026-06-06 15:12:22,022 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-06-06 15:12:22,022 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-06-06 15:12:22,023 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-06-06 15:12:22,024 - openevolve.evaluator - INFO - Successfully loaded evaluation function from evaluate.py
+2026-06-06 15:12:22,024 - openevolve.evaluator - INFO - Initialized evaluator with evaluate.py
+2026-06-06 15:12:22,025 - openevolve.controller - INFO - Initialized OpenEvolve with initial_program.py
+2026-06-06 15:12:22,025 - openevolve.controller - INFO - Adding initial program to database
+2026-06-06 15:12:27,931 - openevolve.evaluator - INFO - Evaluated program 4e6518ce-1b48-43af-8a96-fa79a0ea8a06 in 5.91s: score=0.5768, hit_rate=0.5768, combined_score=0.5768
+2026-06-06 15:12:27,932 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-06-06 15:12:27,937 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-06-06 15:12:27,938 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-06-06 15:12:27,939 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-06-06 15:12:27,939 - openevolve.controller - INFO - Using island-based evolution with 3 islands
+2026-06-06 15:12:27,939 - openevolve.database - INFO - Island Status:
+2026-06-06 15:12:27,939 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.5768, avg=0.5768, diversity=0.00, gen=0 (best: 4e6518ce-1b48-43af-8a96-fa79a0ea8a06)
+2026-06-06 15:12:27,939 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-06 15:12:27,939 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-06 15:12:27,940 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 3 iterations (total: 4)
+2026-06-06 15:12:29,463 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-06-06 15:19:40,403 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-06-06 15:19:40,404 - openevolve.process_parallel - INFO - Iteration 1: Program 55e7115e-5401-4a7c-9eb4-def7b1cad29b (parent: 4e6518ce-1b48-43af-8a96-fa79a0ea8a06) completed in 430.79s
+2026-06-06 15:19:40,404 - openevolve.process_parallel - INFO - Metrics: error=0.0000, timeout=1.0000
+2026-06-06 15:19:40,405 - openevolve.process_parallel - WARNING - ⚠️  No 'combined_score' metric found in evaluation results. Using average of all numeric metrics (0.5000) for evolution guidance. For better evolution results, please modify your evaluator to return a 'combined_score' metric that properly weights different aspects of program performance.
+2026-06-06 15:19:54,944 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 9}
+2026-06-06 15:19:54,944 - openevolve.process_parallel - INFO - Iteration 2: Program 56ae0075-e333-4ab5-9198-22dadef65b9a (parent: 4e6518ce-1b48-43af-8a96-fa79a0ea8a06) completed in 14.54s
+2026-06-06 15:19:54,944 - openevolve.process_parallel - INFO - Metrics: score=0.5768, hit_rate=0.5768, combined_score=0.5768
+2026-06-06 15:27:04,202 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 9, 'diversity': 9}
+2026-06-06 15:27:04,202 - openevolve.process_parallel - INFO - Iteration 3: Program 9bb458c6-3cb6-4c11-9448-63ceaadf1fe0 (parent: 4e6518ce-1b48-43af-8a96-fa79a0ea8a06) completed in 429.26s
+2026-06-06 15:27:04,202 - openevolve.process_parallel - INFO - Metrics: error=0.0000, timeout=1.0000
+2026-06-06 15:27:04,202 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-06-06 15:45:26,328 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-06-06 15:45:26,328 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-06-06 15:45:26,368 - openevolve.process_parallel - INFO - Stopped process pool
+2026-06-06 15:45:26,369 - openevolve.controller - INFO - Using tracked best program: 4e6518ce-1b48-43af-8a96-fa79a0ea8a06
+2026-06-06 15:45:26,369 - openevolve.controller - INFO - Evolution complete. Best program has metrics: score=0.5768, hit_rate=0.5768, combined_score=0.5768
+2026-06-06 15:45:26,370 - openevolve.controller - INFO - Saved best program to openevolve_output/best/best_program.py with program info to openevolve_output/best/best_program_info.json

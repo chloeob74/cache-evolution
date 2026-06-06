@@ -1,0 +1,44 @@
+2026-06-06 17:45:57,632 - openevolve.controller - INFO - Logging to openevolve_output/logs/openevolve_20260606_174557.log
+2026-06-06 17:45:57,640 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-06-06 17:45:57,669 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: anthropic/claude-haiku-4-5
+2026-06-06 17:45:57,669 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: anthropic/claude-haiku-4-5 (weight: 1.00)
+2026-06-06 17:45:57,678 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-06-06 17:45:57,679 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-06-06 17:45:57,680 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-06-06 17:45:57,680 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-06-06 17:45:57,680 - openevolve.database - INFO - Distributed 4 programs across 3 islands
+2026-06-06 17:45:57,680 - openevolve.database - INFO - Loaded database with 4 programs from ./openevolve_db
+2026-06-06 17:45:57,680 - openevolve.database - INFO - Island Status:
+2026-06-06 17:45:57,680 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.6218, avg=0.3990, diversity=15.30, gen=0
+2026-06-06 17:45:57,680 - openevolve.database - INFO -    Island 1: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-06 17:45:57,680 - openevolve.database - INFO -    Island 2: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-06 17:45:57,680 - openevolve.database - INFO - Initialized program database with 4 programs
+2026-06-06 17:45:57,682 - openevolve.evaluator - INFO - Successfully loaded evaluation function from evaluate.py
+2026-06-06 17:45:57,682 - openevolve.evaluator - INFO - Initialized evaluator with evaluate.py
+2026-06-06 17:45:57,682 - openevolve.controller - INFO - Initialized OpenEvolve with initial_program.py
+2026-06-06 17:45:57,682 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 0 with 4 existing programs)
+2026-06-06 17:45:57,685 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-06-06 17:45:57,686 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-06-06 17:45:57,686 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-06-06 17:45:57,686 - openevolve.controller - INFO - Using island-based evolution with 3 islands
+2026-06-06 17:45:57,687 - openevolve.database - INFO - Island Status:
+2026-06-06 17:45:57,687 - openevolve.database - INFO -  * Island 0: 2 programs, best=0.6218, avg=0.3990, diversity=15.30, gen=0
+2026-06-06 17:45:57,687 - openevolve.database - INFO -    Island 1: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-06 17:45:57,687 - openevolve.database - INFO -    Island 2: 1 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-06 17:45:57,687 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 0 for 3 iterations (total: 3)
+2026-06-06 17:45:58,467 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-06-06 17:46:06,213 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 5}
+2026-06-06 17:46:06,214 - openevolve.process_parallel - INFO - Iteration 0: Program 61ee9c89-5e5c-4175-a3b4-77ea655dc631 (parent: ef135ba3-fe89-4112-ac22-22d6ffd8f298) completed in 7.68s
+2026-06-06 17:46:06,215 - openevolve.process_parallel - INFO - Metrics: score=0.6529, hit_rate=0.6218, time=0.0471, combined_score=0.6529
+2026-06-06 17:46:06,215 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 0: 61ee9c89-5e5c-4175-a3b4-77ea655dc631
+2026-06-06 17:46:29,977 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 9, 'diversity': 0}
+2026-06-06 17:46:29,978 - openevolve.process_parallel - INFO - Iteration 1: Program 09741a95-4233-43e3-90ce-84e087f8ca7b (parent: 1c717709-afb9-4ed9-bfdb-5edc275fa032) completed in 23.76s
+2026-06-06 17:46:29,978 - openevolve.process_parallel - INFO - Metrics: score=0.1599, hit_rate=0.1776, time=14.3044, combined_score=0.1599
+2026-06-06 17:46:38,975 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 6, 'diversity': 0}
+2026-06-06 17:46:38,975 - openevolve.process_parallel - INFO - Iteration 2: Program d6011c96-a927-426c-9969-9bee4b1e1f21 (parent: 85a7d4c5-2f09-4eb9-af20-fee9085d3722) completed in 9.00s
+2026-06-06 17:46:38,976 - openevolve.process_parallel - INFO - Metrics: score=0.6529, hit_rate=0.6218, time=0.0472, combined_score=0.6529
+2026-06-06 17:46:38,976 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-06-06 17:46:39,020 - openevolve.process_parallel - INFO - Stopped process pool
+2026-06-06 17:46:39,020 - openevolve.controller - INFO - Using tracked best program: 61ee9c89-5e5c-4175-a3b4-77ea655dc631
+2026-06-06 17:46:39,020 - openevolve.controller - INFO - Evolution complete. Best program has metrics: score=0.6529, hit_rate=0.6218, time=0.0471, combined_score=0.6529
+2026-06-06 17:46:39,021 - openevolve.controller - INFO - Saved best program to openevolve_output/best/best_program.py with program info to openevolve_output/best/best_program_info.json
