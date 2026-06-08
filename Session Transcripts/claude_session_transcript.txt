@@ -1,0 +1,1716 @@
+ ▐▛███▜▌   Claude Code v2.1.168
+▝▜█████▛▘  Opus 4.8 · Claude Pro
+  ▘▘ ▝▝    ~/cache_evolution
+
+✻ Conversation compacted (ctrl+o for history)
+
+
+❯ /compact                                                                      
+  ⎿  Compacted (ctrl+o to see full summary)
+  ⎿  Read cache_evolution/evaluate.py (139 lines)
+  ⎿  Read cache_evolution/prompt.txt (97 lines)
+  ⎿  Read cache_evolution/cache_simulator.py (192 lines)
+  ⎿  Read .claude/projects/-home-ubuntu/memory/claude-code-api-key-billing-gotcha.md (15 lines)
+  ⎿  Read .claude/projects/-home-ubuntu/memory/cache-evolution-headroom.md (13 lines)
+
+❯ What can you tell me about my most recent run? (It was stopped before it      
+  reached 50 iterations).                                                       
+
+● Let me look at what the most recent run actually produced before I tell you
+  about it.
+
+● Bash(cd ~/cache_evolution && ls -la openevolve_db/ 2>/dev/null && echo
+      "---PROGRAMS---" && ls openevolve_db/programs/*.json 2>/dev/null | wc -l
+      && echo "---OUTPUT DI…)
+  ⎿  total 12
+     drwxrwxr-x 3 ubuntu ubuntu 4096 Jun  6 17:30 .
+     drwxrwxr-x 6 ubuntu ubuntu 4096 Jun  8 20:34 ..
+     … +6 lines (ctrl+o to expand)
+
+● Bash(cd ~/cache_evolution && echo "=== output dir tree ===" && find
+      openevolve_output -maxdepth 2 -type d | sort && echo "=== checkpoints ==="
+      && ls -dt openevolve_o…)
+  ⎿  Error: Exit code 2
+     === output dir tree ===
+     openevolve_output
+     openevolve_output/best
+     openevolve_output/logs
+     === checkpoints ===
+
+● Bash(cd ~/cache_evolution && echo "=== best ===" && ls -la
+      openevolve_output/best/ && echo "=== best_program_info ===" && cat
+      openevolve_output/best/best_program_inf…)
+  ⎿  === best ===
+     total 16
+     drwxrwxr-x 2 ubuntu ubuntu 4096 Jun  6 15:02 .
+     … +31 lines (ctrl+o to expand)
+
+● The most recent run actually did produce real results. Let me read the run log
+  to get the full picture.
+
+● Bash(cd ~/cache_evolution &&
+      L=openevolve_output/logs/openevolve_20260608_171218.log && echo "=== first
+      lines ===" && head -20 "$L" && echo "=== new best events ==="…)
+  ⎿  === first lines ===
+     2026-06-08 17:12:18,644 - openevolve.controller - INFO - Logging to op
+     enevolve_output/logs/openevolve_20260608_171218.log
+     … +72 lines (ctrl+o to expand)
+
+● The run completed an evolution but let me verify exactly how far it got and
+  whether it was stopped early.
+
+● Bash(cd ~/cache_evolution &&
+      L=openevolve_output/logs/openevolve_20260608_171218.log && echo "=== max
+      iteration mentioned ===" && grep -oE "iteration [0-9]+" "$L" |…)
+  ⎿  === max iteration mentioned ===
+     38
+     === checkpoint/progress lines ===
+     … +38 lines (ctrl+o to expand)
+
+● Now let me look at what the winning program actually does, and confirm the
+  baseline numbers for comparison.
+
+● Bash(cd ~/cache_evolution &&
+      L=openevolve_output/logs/openevolve_20260608_171218.log && echo "=== error
+      count ===" && grep -c "'error'" "$L" && echo "=== sample erro…)
+  ⎿  Error: Exit code 1
+     === error count ===
+     0
+
+● Bash(cd ~/cache_evolution && sed -n '/EVOLVE-BLOCK-START/,/EVOLVE-BLOCK-END/p'
+      openevolve_output/best/best_program.py)
+  ⎿      # EVOLVE-BLOCK-START
+         def __init__(self, capacity_bytes):
+             self.capacity = capacity_bytes
+     … +54 lines (ctrl+o to expand)
+
+● Here's the evaluation of your most recent run (openevolve_20260608_171218, the
+  16 MB / 50k-record run on msr_hm_0 with Sonnet 4.6).
+
+  Run status
+
+  - Stopped at iteration 46 of 50. Clean run: 0 timeouts, 0 errors across all
+  evaluated programs.
+  - The best program was found at iteration 38 and never beaten in the remaining
+  iterations.
+
+  Result
+
+  Best evolved policy: GDSF + one-hit-wonder admission filter
+  - hit_rate = 0.5311, score = 0.5576 (time 0.06 s → got the 1.05 fast-bonus)
+  - The evolved block is a real Greedy-Dual-Size-Frequency policy: priority =
+  clock + freq/size, eviction via a lazy-deletion min-heap, frequency that
+  persists across evictions (ghost history), plus an admission filter that
+  blocks first-time objects when the cache is full.
+
+  Comparison (16 MB, 50k records)
+
+  ┌──────────────────────┬──────────┬──────────┐
+  │        Policy        │ hit_rate │  vs LRU  │
+  ├──────────────────────┼──────────┼──────────┤
+  │ LRU (seed)           │ 0.4793   │ —        │
+  ├──────────────────────┼──────────┼──────────┤
+  │ LFU                  │ 0.5036   │ +2.43 pp │
+  ├──────────────────────┼──────────┼──────────┤
+  │ Evolved GDSF         │ 0.5311   │ +5.18 pp │
+  ├──────────────────────┼──────────┼──────────┤
+  │ Belady/MIN (ceiling) │ 0.5524   │ +7.31 pp │
+  └──────────────────────┴──────────┴──────────┘
+
+  So the evolved policy beats both human baselines and captures ~71% of the 
+  available headroom between LRU and the clairvoyant optimum — a genuinely
+  strong result, and the clearest win you've gotten (the 64 MB workload only had
+  1.5 pp of headroom to fight over).
+
+  Evolution trajectory
+
+  0.2516 → 0.5038 (it1) → 0.5288 (it3) → 0.5305 (it15) → 0.5548 (it17) → 0.5575
+  (it35) → 0.5576 (it38). Most of the gain came in the first iteration (LRU →
+  admission filter), with GDSF refinement adding the rest.
+
+  Two caveats worth noting for the report
+
+  1. The seed's score is a calibration artifact, not signal. The initial LRU was
+  logged at score 0.2516 (penalized, time_factor 0.525) because at launch
+  BASELINE_HIT_RATE was still 0.4793 and LRU's actual rate is 0.47926 — just
+  below it, so the ×0.5 penalty fired on the baseline itself. This only affected
+  the seed's displayed number; every evolved program cleared 0.4793 and got the
+  bonus, so the evolution outcome is unaffected. (Your later edit to 0.4790
+  fixes this for future runs.)
+  2. Different failure mode than the 64 MB run — better behavior this time. The
+  64 MB winner gamed the O(1)-eviction constraint with a bounded O(512) scan.
+  This run instead used a legitimate lazy-deletion heap. That's algorithmically
+  honest, but note heap eviction is technically O(log n), not the O(1) the
+  prompt demands — it slips past only because at 50k records it still runs in
+  0.06 s and pockets the speed bonus regardless. So the "speed threshold lets
+  sub-O(1) policies through" loophole is still live; the LLM just exercised it
+  more defensibly here.
+
+  Net: this is the run to feature in the deliverable. Want me to (a) re-score
+  the saved best program under the corrected BASELINE_HIT_RATE=0.4790 for a
+  clean headline number, or (b) run FIFO to complete the baseline table?
+
+✻ Baked for 1m 26s
+
+❯ Yes, rescore the saved best program. I do not need FIFO.                      
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python -c "
+      import evaluate…)  ⎿  hit_rate     = 0.53106
+     time (s)     = 0.064
+     time_factor  = 1.05
+     … +2 lines (ctrl+o to expand)
+
+● Rescored under the corrected BASELINE_HIT_RATE = 0.4790:
+
+  ┌─────────────┬───────────────────┐
+  │   Metric    │       Value       │
+  ├─────────────┼───────────────────┤
+  │ hit_rate    │ 0.53106           │
+  ├─────────────┼───────────────────┤
+  │ time        │ 0.064 s           │
+  ├─────────────┼───────────────────┤
+  │ time_factor │ 1.05 (fast bonus) │
+  ├─────────────┼───────────────────┤
+  │ score       │ 0.55761           │
+  └─────────────┴───────────────────┘
+
+  The number is identical to the run-time value — which is the point: the
+  evolved program sits well above the baseline, so it gets the 1.05 bonus either
+  way. The calibration bug only ever distorted the seed's displayed score,
+  never the winner's. So your clean headline for the report is:
+
+  - Evolved GDSF: 53.11% hit rate, vs LRU 47.93% (+5.18 pp) and LFU 50.36%
+  (+2.75 pp), against a Belady/MIN ceiling of 55.24% — ~71% of the available
+  headroom captured, at 0.06 s with 0 errors and 0 timeouts.
+
+  That's a solid, defensible result to anchor the deliverable.
+
+✻ Churned for 14s
+
+❯ Before getting into a report, I want to work on visualizing these results. I  
+  have the visualize.py file for visualiztion of the results, but I want input  
+  and if anything couldb e added or made better.                                
+
+  Read 1 file (ctrl+o to expand)
+  ⎿  Loaded CLAUDE.md
+
+● Good script overall — it runs, produces a multi-panel interactive HTML, and
+  the plumbing (parent links, color-coding by status) is sound. But before I
+  give feedback I want to verify what the actual program JSON contains, because
+  several panels depend on fields that may not be populated.
+
+● Bash(cd ~/cache_evolution && f=$(ls -t openevolve_db/programs/*.json | head
+      -1) && echo "FILE: $f" && /home/ubuntu/ds5110_project/bin/python -c "
+      import json,glob,os…)
+  ⎿  FILE: openevolve_db/programs/80986cb5-a858-4e9b-b5d3-9fab77bc7772.json
+     total program json files: 47
+     top-level keys: ['artifact_dir', 'artifacts_json', 'changes_descriptio
+     … +13 lines (ctrl+o to expand)
+
+● Good news first: I checked the data, and the DB holds only this run's 47 
+  programs (all capacity_mb=16.0, timestamps 17:12–17:31) — so it was cleared
+  before launch and the script won't conflate the 64 MB and 16 MB runs. Every
+  field the panels read (complexity, metadata.island, generation, code,
+  iteration_found) is populated, so nothing will silently render empty.
+
+  Here's my input, roughly in priority order for your deliverable.
+
+  High-value gaps
+
+  1. The single most important chart is missing: the baseline comparison.
+  Nothing in the script shows LRU / LFU / the Belady-MIN ceiling. The whole
+  thesis — "did the evolved policy beat the human baselines, and how close to
+  optimal" — has no visual. The headline figure should be a bar chart:
+  LRU 0.4793 · LFU 0.5036 · Evolved 0.5311 · MIN 0.5524, with the LRU→MIN
+  headroom band shaded and "71% of headroom captured" annotated. This is the
+  figure that goes at the top of the report.
+
+  2. Score-over-iterations should plot the running best (staircase), not raw 
+  per-program scatter. Right now every candidate is plotted, including
+  regressions, so the actual progress signal is buried in noise. Add a
+  np.maximum.accumulate frontier line, plus horizontal reference lines for the
+  LRU/LFU/MIN scores so you can literally see the iteration where evolution
+  crossed each baseline (LRU at it1, LFU around it17).
+
+  3. Use the real iteration numbers. parse_iteration() reinvents iteration as
+  timestamp-rank (0…46), but each JSON already carries iteration_found. The
+  invented numbers won't match your narrative — your best is "iteration 38" in
+  the log, but this script would label it something else. Switch to
+  iteration_found.
+
+  4. The 2-second line matters more than the 30s line. Your scoring loophole
+  lives at FAST_THRESHOLD=2.0 (the 5% bonus), not at the 30s timeout. The time
+  panel only draws the timeout line. Add the 2.0s line and color points by
+  whether they earned time_factor=1.05 vs got penalized — that's exactly where
+  the "squeak under the bonus" gaming shows up in your failure analysis.
+
+  5. Flag the seed's penalized score as an artifact. The initial LRU's 0.2516
+  (calibration-bug penalty) will look like a genuine bad evolved program in the
+  score plot. Mark it explicitly as "baseline seed (penalized artifact)" so the
+  dip reads correctly.
+
+  Cleanups / weaker panels
+
+  6. "Island Population Over Time" is misleading — it appends (iteration, 1) per
+  program and bars them, so it's just a rug of 1-height bars, not a population.
+  Either make it a cumulative count per island, or (more useful) plot
+  per-island best-score trajectories, which would actually demonstrate
+  island-based evolution doing its job.
+
+  7. Dead code. matplotlib is imported but never used, and
+  build_evolution_tree() constructs a networkx graph G that's never consumed
+  (the tree panel is rebuilt by hand). Either delete both or use G for a real
+  tree layout.
+
+  8. Add context KPIs to the summary table — currently it shows raw best
+  score/hit-rate with no yardstick. Add Δ-vs-LRU in pp (+5.18), Δ-vs-LFU
+  (+2.75), and headroom-captured (71%).
+
+  My recommendation
+
+  Items 1–5 are what turn this from "a dashboard of the run" into "evidence for
+  the report." 1 and 2 are the big ones.
+
+  Want me to implement these? I'd suggest: fold 1, 2, 4, 8 into visualize.py
+  (with the baseline/MIN constants pulled from compute_optimal.py so they're not
+  hardcoded), fix 3 and 5, clean up 6–7. Say the word and I'll apply it, or I
+  can do just the top few if you'd rather keep the change small.
+
+✻ Sautéed for 1m 15s
+
+❯ Yes, definitely apply 1-5. Also, the cleanups for 6-7 and the addition of 8   
+  would be helpful. I also think adding background and context of jargon and    
+  terms used would be helpful (such as LRU, LRU, what is being measure and      
+  calculated, etc0.                                                             
+
+● Let me look at compute_optimal.py so I can pull the baseline/MIN numbers
+  dynamically instead of hardcoding them.
+
+  Read 1 file (ctrl+o to expand)
+
+● All the pieces are confirmed. Baselines: I'll compute LRU/LFU live from
+  cache_simulator.py and MIN from compute_optimal.py at 16 MB / 50k (cached to a
+  small JSON so repeat runs are instant), and I'll skip FIFO per your earlier
+  preference. Here's the rewrite:
+
+● Write(visualize.py)
+  ⎿  Added 397 lines, removed 202 lines
+       1 -"""Standalone visualization script for OpenEvolve results.     
+       1 +"""Standalone visualization script for OpenEvolve cache-policy 
+         +results.                                                       
+       2  
+       3 -Reads program database and log files, generates an interactive 
+         -HTML report.                                                   
+       3 +Reads the program database and log files, computes human/optima
+         +l baselines,                                                   
+       4 +and generates a single interactive HTML report with a backgroun
+         +d glossary,                                                    
+       5 +context KPIs, and report-ready charts.                         
+       6  
+       7  Usage:
+       6 -    python visualize.py [--db-dir ./openevolve_db] [--log-dir o
+         -penevolve_output/logs] [--output evolution_report.html]        
+       8 +    python visualize.py [--db-dir ./openevolve_db] \           
+       9 +                        [--log-dir openevolve_output/logs] \   
+      10 +                        [--output evolution_report.html]       
+      11  """
+      12  
+      13  import argparse
+      14  import json
+      15  import os
+      12 -import re                                                      
+      16  import glob
+      14 -from datetime import datetime                                  
+      17  from pathlib import Path
+      18  
+      17 -import matplotlib                                              
+      18 -matplotlib.use("Agg")                                          
+      19 -import matplotlib.pyplot as plt                                
+      20 -import matplotlib.ticker as mticker                            
+      21 -import networkx as nx                                          
+      19  import plotly.graph_objects as go
+      20  from plotly.subplots import make_subplots
+      21  
+      22  
+      23 +# Must match evaluate.py so the baselines are computed on the s
+         +ame workload.                                                  
+      24 +TRACE_FILE = "msr_hm_0.oracleGeneral.zst"                      
+      25 +CACHE_SIZE_BYTES = 16 * 1024 * 1024  # 16MB                    
+      26 +MAX_RECORDS = 50000                                            
+      27 +FAST_THRESHOLD = 2.0   # eval faster than this earns the 1.05 s
+         +core bonus                                                     
+      28 +SLOW_THRESHOLD = 25.0  # eval slower than this is graduated-pen
+         +alized                                                         
+      29 +TIMEOUT = 30.0                                                 
+      30 +BASELINE_CACHE = "baselines_cache.json"                        
+      31 +                                                               
+      32 +                                                               
+      33 +# -------------------------------------------------------------
+         +-------------- #                                               
+      34 +# Data loading                                                 
+      35 +# -------------------------------------------------------------
+         +-------------- #                                               
+      36  def load_programs(db_dir):
+      37      """Load all program JSON files from the database directory.
+          """
+      38      programs = []
+     ...
+       44  
+       45  
+       46  def load_log(log_dir):
+       37 -    """Load the most recent log file and parse relevant entrie
+          -s."""                                                         
+       47 +    """Return the path of the most recent log file (for the su
+          +mmary table)."""                                              
+       48      log_files = sorted(glob.glob(os.path.join(log_dir, "openev
+           olve_*.log")))
+       39 -    if not log_files:                                         
+       40 -        return None, []                                       
+       49 +    return log_files[-1] if log_files else None               
+       50  
+       42 -    log_path = log_files[-1]                                  
+       43 -    with open(log_path, "r") as f:                            
+       44 -        lines = f.readlines()                                 
+       51  
+       46 -    island_snapshots = []                                     
+       47 -    for line in lines:                                        
+       48 -        if "Island Status:" in line:                          
+       49 -            island_snapshots.append(line.strip())             
+       52 +def order_by_iteration(programs):                             
+       53 +    """Attach a real iteration index, preferring the authorita
+          +tive field.                                                   
+       54  
+       51 -    return log_path, island_snapshots                         
+       55 +    OpenEvolve records `iteration_found` on each program; fall
+          + back to                                                      
+       56 +    timestamp rank only if it is missing.                     
+       57 +    """                                                       
+       58 +    has_iter = all("iteration_found" in p for p in programs)  
+       59 +    if has_iter:                                              
+       60 +        for p in programs:                                    
+       61 +            p["_iteration"] = p.get("iteration_found", 0)     
+       62 +    else:                                                     
+       63 +        for i, p in enumerate(sorted(programs, key=lambda p: p
+          +.get("timestamp", 0))):                                       
+       64 +            p["_iteration"] = i                               
+       65 +    return programs                                           
+       66  
+       67  
+       54 -def parse_iteration(programs):                                
+       55 -    """Assign iteration numbers based on timestamp ordering.""
+          -"                                                             
+       56 -    sorted_programs = sorted(programs, key=lambda p: p.get("ti
+          -mestamp", 0))                                                 
+       57 -    for i, prog in enumerate(sorted_programs):                
+       58 -        prog["_iteration"] = i                                
+       59 -    return sorted_programs                                    
+       68 +# ------------------------------------------------------------
+          +--------------- #                                             
+       69 +# Baselines (LRU / LFU human-written, Belady-MIN clairvoyant c
+          +eiling)                                                       
+       70 +# ------------------------------------------------------------
+          +--------------- #                                             
+       71 +def compute_baselines(cache_bytes=CACHE_SIZE_BYTES, n=MAX_RECO
+          +RDS):                                                         
+       72 +    """Compute LRU, LFU and Belady/MIN hit rates on the same t
+          +race/slice.                                                   
+       73  
+       74 +    Cached to BASELINE_CACHE keyed by (cache_bytes, n) so repe
+          +at runs are                                                   
+       75 +    instant. Returns a dict of hit rates, or None if dependenc
+          +ies/trace are                                                 
+       76 +    unavailable (charts then degrade gracefully).             
+       77 +    """                                                       
+       78 +    key = f"{cache_bytes}_{n}"                                
+       79 +    if os.path.exists(BASELINE_CACHE):                        
+       80 +        try:                                                  
+       81 +            cached = json.load(open(BASELINE_CACHE))          
+       82 +            if key in cached:                                 
+       83 +                return cached[key]                            
+       84 +        except Exception:                                     
+       85 +            pass                                              
+       86  
+       62 -def build_evolution_tree(programs):                           
+       63 -    """Build a directed graph of parent-child relationships.""
+          -"                                                             
+       64 -    G = nx.DiGraph()                                          
+       65 -    prog_map = {p["id"]: p for p in programs}                 
+       87 +    try:                                                      
+       88 +        import cache_simulator as cs                          
+       89 +        import compute_optimal as co                          
+       90 +    except Exception as e:                                    
+       91 +        print(f"[baselines] skipped (import failed: {e})")    
+       92 +        return None                                           
+       93  
+       67 -    for prog in programs:                                     
+       68 -        pid = prog["id"]                                      
+       69 -        score = prog.get("metrics", {}).get("combined_score", 
+          -0)                                                            
+       70 -        G.add_node(pid, score=score, iteration=prog.get("_iter
+          -ation", 0),                                                   
+       71 -                   island=prog.get("metadata", {}).get("island
+          -", -1),                                                       
+       72 -                   code_len=len(prog.get("code", "")))        
+       94 +    if not os.path.exists(TRACE_FILE):                        
+       95 +        print(f"[baselines] skipped (trace not found: {TRACE_F
+          +ILE})")                                                       
+       96 +        return None                                           
+       97  
+       74 -        parent_id = prog.get("parent_id")                     
+       75 -        if parent_id and parent_id in prog_map:               
+       76 -            G.add_edge(parent_id, pid)                        
+       98 +    records = cs.parse_trace(TRACE_FILE)[:n]                  
+       99 +    simple = [(oid, sz) for _ts, oid, sz, _na in records]     
+      100  
+       78 -    return G                                                  
+      101 +    def run(cache):                                           
+      102 +        for oid, sz in simple:                                
+      103 +            cache.access(oid, sz)                             
+      104 +        return cache.hit_rate()                               
+      105  
+      106 +    lru = run(cs.LRUCache(cache_bytes))                       
+      107 +    lfu = run(cs.LFUCache(cache_bytes))                       
+      108 +    co.CAPACITY = cache_bytes                                 
+      109 +    mn = co.belady_hit_rate(simple)                           
+      110  
+       81 -def generate_html_report(programs, log_path, output_path):    
+       82 -    """Generate an interactive HTML report with all visualizat
+          -ions."""                                                      
+       83 -    programs = parse_iteration(programs)                      
+       84 -    G = build_evolution_tree(programs)                        
+      111 +    result = {"LRU": lru, "LFU": lfu, "MIN": mn}              
+      112  
+       86 -    # Separate initial program (no parent) from evolved progra
+          -ms                                                            
+      113 +    try:                                                      
+      114 +        existing = json.load(open(BASELINE_CACHE)) if os.path.
+          +exists(BASELINE_CACHE) else {}                                
+      115 +        existing[key] = result                                
+      116 +        with open(BASELINE_CACHE, "w") as f:                  
+      117 +            json.dump(existing, f, indent=2)                  
+      118 +    except Exception:                                         
+      119 +        pass                                                  
+      120 +                                                              
+      121 +    return result                                             
+      122 +                                                              
+      123 +                                                              
+      124 +# ------------------------------------------------------------
+          +--------------- #                                             
+      125 +# Small helpers                                               
+      126 +# ------------------------------------------------------------
+          +--------------- #                                             
+      127 +def running_max(values):                                      
+      128 +    """Cumulative maximum (the evolution frontier / staircase)
+          +."""                                                          
+      129 +    best = float("-inf")                                      
+      130 +    out = []                                                  
+      131 +    for v in values:                                          
+      132 +        best = max(best, v)                                   
+      133 +        out.append(best)                                      
+      134 +    return out                                                
+      135 +                                                              
+      136 +                                                              
+      137 +def status_color(time_s, time_factor, error):                 
+      138 +    """Color a program by its scoring status."""              
+      139 +    if error == "timeout":                                    
+      140 +        return "#d62728"          # red                       
+      141 +    if error:                                                 
+      142 +        return "#ff7f0e"          # orange                    
+      143 +    if time_factor and time_factor >= 1.05:                   
+      144 +        return "#2ca02c"          # green - earned the speed b
+          +onus                                                          
+      145 +    if time_factor and time_factor < 1.0:                     
+      146 +        return "#9467bd"          # purple - penalized (slow o
+          +r below baseline)                                             
+      147 +    return "#1f77b4"              # blue - neutral (1.0)      
+      148 +                                                              
+      149 +                                                              
+      150 +# ------------------------------------------------------------
+          +--------------- #                                             
+      151 +# Glossary / background block                                 
+      152 +# ------------------------------------------------------------
+          +--------------- #                                             
+      153 +def glossary_html():                                          
+      154 +    return """                                                
+      155 +    <details open style="font-family: sans-serif; padding: 16p
+          +x 24px; background:#eef3f8;                                   
+      156 +        border-bottom:2px solid #c8d6e5;">                    
+      157 +      <summary style="font-size:1.2em; font-weight:bold; curso
+          +r:pointer;">                                                  
+      158 +        Background &amp; Glossary &mdash; what is being measur
+          +ed</summary>                                                  
+      159 +      <div style="margin-top:12px; line-height:1.5; max-width:
+          +1100px;">                                                     
+      160 +        <p><b>The task.</b> Evolve a <i>cache replacement poli
+          +cy</i>. A cache holds a                                       
+      161 +        limited number of bytes (here <b>16&nbsp;MB</b>). Each
+          + request asks for an object;                                  
+      162 +        if it is already cached that is a <b>hit</b>, otherwis
+          +e a <b>miss</b> and the object                                
+      163 +        is inserted. When there is no room, the policy must ch
+          +oose which object(s) to                                       
+      164 +        <b>evict</b>. We replay a real storage trace (<code>ms
+          +r_hm_0</code>,                                                
+      165 +        50,000 requests) and measure how often the policy scor
+          +es hits.</p>                                                  
+      166 +                                                              
+      167 +        <p><b>Hit rate</b> = hits / total accesses. This is th
+          +e primary quality metric                                      
+      168 +        (higher is better). Everything else is in service of r
+          +aising it.</p>                                                
+      169 +                                                              
+      170 +        <p><b>Human-written baselines</b> (the bar we must cle
+          +ar):</p>                                                      
+      171 +        <ul>                                                  
+      172 +          <li><b>LRU</b> (Least Recently Used) &mdash; evict t
+          +he object unused for the                                      
+      173 +          longest time. Simple and strong; this is the seed th
+          +e evolution starts from.</li>                                 
+      174 +          <li><b>LFU</b> (Least Frequently Used) &mdash; evict
+          + the object with the fewest                                   
+      175 +          accesses so far.</li>                               
+      176 +          <li><b>FIFO</b> (First In First Out) &mdash; evict t
+          +he oldest-inserted object,                                    
+      177 +          regardless of how often it is used.</li>            
+      178 +        </ul>                                                 
+      179 +                                                              
+      180 +        <p><b>GDSF</b> (Greedy-Dual-Size-Frequency) &mdash; th
+          +e strategy the evolution                                      
+      181 +        discovered: rank objects by <i>frequency / size</i> pl
+          +us an aging "clock", and add                                  
+      182 +        an <b>admission filter</b> that refuses brand-new obje
+          +cts when the cache is full                                    
+      183 +        (so one-hit-wonders don't evict useful data).</p>     
+      184 +                                                              
+      185 +        <p><b>Belady / MIN</b> &mdash; a <i>clairvoyant</i> re
+          +ference that looks at future                                  
+      186 +        requests and evicts whatever is needed farthest ahead.
+          + It cannot be built in                                        
+      187 +        practice (it cheats by knowing the future), so it serv
+          +es as the <b>ceiling</b> that                                 
+      188 +        bounds how good any real policy could be. <b>Headroom<
+          +/b> = MIN &minus; LRU;                                        
+      189 +        <b>headroom captured</b> = (Evolved &minus; LRU) / (MI
+          +N &minus; LRU).</p>                                           
+      190 +                                                              
+      191 +        <p><b>Combined score</b> &mdash; the optimizer's rewar
+          +d, not the hit rate itself:                                   
+      192 +        <code>score = hit_rate &times; time_factor</code>. The
+          + <code>time_factor</code> is                                  
+      193 +        <b>1.05</b> when evaluation runs under 2&nbsp;s (a spe
+          +ed bonus), 1.0 up to 25&nbsp;s,                               
+      194 +        a graduated penalty beyond that, and is halved (&times
+          +;0.5) if the hit rate falls                                   
+      195 +        below the LRU baseline. <i>Note:</i> the LRU seed sits
+          + a hair below the configured                                  
+      196 +        baseline threshold, so its own score is artificially h
+          +alved &mdash; a calibration                                   
+      197 +        artifact, flagged in the charts, that does not affect 
+          +any evolved program.</p>                                      
+      198 +                                                              
+      199 +        <p><b>OpenEvolve terms:</b></p>                       
+      200 +        <ul>                                                  
+      201 +          <li><b>Iteration</b> &mdash; one LLM-generated candi
+          +date program, then evaluated.</li>                            
+      202 +          <li><b>Generation</b> &mdash; evolutionary depth: ho
+          +w many mutation steps from the seed.</li>                     
+      203 +          <li><b>Island</b> &mdash; an independently evolving 
+          +sub-population; good ideas                                    
+      204 +          migrate between islands periodically, which preserve
+          +s diversity.</li>                                             
+      205 +          <li><b>MAP-Elites</b> &mdash; keeps the best program
+          + in each region of a feature                                  
+      206 +          grid rather than a single global winner, so varied s
+          +trategies survive.</li>                                       
+      207 +          <li><b>Evolution tree</b> &mdash; parent &rarr; chil
+          +d links showing which program                                 
+      208 +          was mutated into which.</li>                        
+      209 +        </ul>                                                 
+      210 +      </div>                                                  
+      211 +    </details>                                                
+      212 +    """                                                       
+      213 +                                                              
+      214 +                                                              
+      215 +# ------------------------------------------------------------
+          +--------------- #                                             
+      216 +# Report                                                      
+      217 +# ------------------------------------------------------------
+          +--------------- #                                             
+      218 +def generate_html_report(programs, log_path, output_path, base
+          +lines):                                                       
+      219 +    programs = order_by_iteration(programs)                   
+      220 +                                                              
+      221      initial = [p for p in programs if p.get("parent_id") is No
+           ne]
+       88 -    evolved = [p for p in programs if p.get("parent_id") is no
+          -t None]                                                       
+      222 +    evolved = sorted(programs, key=lambda p: p.get("_iteration
+          +", 0))                                                        
+      223  
+       90 -    # Sort evolved by iteration                               
+       91 -    evolved = sorted(evolved, key=lambda p: p.get("_iteration"
+          -, 0))                                                         
+      224 +    def m(p, key, default=0):                                 
+      225 +        return p.get("metrics", {}).get(key, default)         
+      226  
+       93 -    # Extract data for charts                                 
+       94 -    iterations = [p.get("_iteration", 0) for p in evolved]    
+       95 -    scores = [p.get("metrics", {}).get("combined_score", 0) fo
+          -r p in evolved]                                               
+       96 -    hit_rates = [p.get("metrics", {}).get("hit_rate", 0) for p
+          - in evolved]                                                  
+       97 -    times = [p.get("metrics", {}).get("time", 0) for p in evol
+          -ved]                                                          
+       98 -    errors = [p.get("metrics", {}).get("artifacts", {}).get("e
+          -rror") for p in evolved]                                      
+      227 +    def art(p, key, default=None):                            
+      228 +        return p.get("metrics", {}).get("artifacts", {}).get(k
+          +ey, default)                                                  
+      229  
+      100 -    # Color code by status                                    
+      101 -    colors = []                                               
+      102 -    for t, err in zip(times, errors):                         
+      103 -        if err == "timeout":                                  
+      104 -            colors.append("red")                              
+      105 -        elif err:                                             
+      106 -            colors.append("orange")                           
+      107 -        elif t > 25:                                          
+      108 -            colors.append("yellow")                           
+      109 -        else:                                                 
+      110 -            colors.append("green")                            
+      230 +    iterations = [p["_iteration"] for p in evolved]           
+      231 +    scores = [m(p, "combined_score") for p in evolved]        
+      232 +    hit_rates = [m(p, "hit_rate") for p in evolved]           
+      233 +    times = [m(p, "time") for p in evolved]                   
+      234 +    tfactors = [art(p, "time_factor") for p in evolved]       
+      235 +    errors = [art(p, "error") for p in evolved]               
+      236 +    colors = [status_color(t, tf, e) for t, tf, e in zip(times
+          +, tfactors, errors)]                                          
+      237  
+      238 +    score_frontier = running_max(scores)                      
+      239 +    hr_frontier = running_max(hit_rates)                      
+      240 +                                                              
+      241 +    best_prog = max(programs, key=lambda p: m(p, "combined_sco
+          +re"))                                                         
+      242 +    best_score = m(best_prog, "combined_score")               
+      243 +    best_hr = m(best_prog, "hit_rate")                        
+      244 +                                                              
+      245 +    # Seed (initial LRU) coordinates for the artifact annotati
+          +on.                                                           
+      246 +    seed = initial[0] if initial else None                    
+      247 +    seed_iter = seed["_iteration"] if seed else None          
+      248 +    seed_score = m(seed, "combined_score") if seed else None  
+      249 +                                                              
+      250 +    b = baselines or {}                                       
+      251 +    lru, lfu, mn = b.get("LRU"), b.get("LFU"), b.get("MIN")   
+      252 +                                                              
+      253      fig = make_subplots(
+      254          rows=3, cols=2,
+      255          subplot_titles=(
+      115 -            "Score & Hit Rate Over Iterations",               
+      116 -            "Execution Time Distribution",                    
+      117 -            "Evolution Tree",                                 
+      118 -            "Island Population Over Time",                    
+      119 -            "Score vs Complexity",                            
+      120 -            "Hit Rate vs Cache Items"                         
+      256 +            "Hit Rate: Evolved vs Baselines vs Optimal Ceiling
+          +",                                                            
+      257 +            "Score Progress (best-so-far frontier)",          
+      258 +            "Hit Rate per Iteration (with baseline references)
+          +",                                                            
+      259 +            "Execution Time per Iteration (scoring thresholds)
+          +",                                                            
+      260 +            "Evolution Tree (generation vs score)",           
+      261 +            "Best Score per Island Over Iterations",          
+      262          ),
+      263          specs=[
+      123 -            [{"secondary_y": True}, {"type": "scatter"}],     
+      124 -            [{"type": "scatter"}, {"type": "bar"}],           
+      125 -            [{"type": "scatter"}, {"type": "scatter"}]        
+      264 +            [{"type": "bar"}, {"type": "scatter"}],           
+      265 +            [{"type": "scatter"}, {"type": "scatter"}],       
+      266 +            [{"type": "scatter"}, {"type": "scatter"}],       
+      267          ],
+      127 -        vertical_spacing=0.12,                                
+      128 -        horizontal_spacing=0.10                               
+      268 +        vertical_spacing=0.10,                                
+      269 +        horizontal_spacing=0.10,                              
+      270      )
+      271  
+      131 -    # 1. Score & Hit Rate over iterations                     
+      272 +    # ---- (1,1) Headline: baseline comparison bar -----------
+          +--------------- #                                             
+      273 +    bar_names, bar_vals, bar_colors = [], [], []              
+      274 +    if lru is not None:                                       
+      275 +        bar_names.append("LRU<br>(seed)"); bar_vals.append(lru
+          +); bar_colors.append("#8c8c8c")                               
+      276 +    if lfu is not None:                                       
+      277 +        bar_names.append("LFU"); bar_vals.append(lfu); bar_col
+          +ors.append("#8c8c8c")                                         
+      278 +    bar_names.append("Evolved<br>(GDSF)"); bar_vals.append(bes
+          +t_hr); bar_colors.append("#2ca02c")                           
+      279 +    if mn is not None:                                        
+      280 +        bar_names.append("MIN<br>(ceiling)"); bar_vals.append(
+          +mn); bar_colors.append("#d62728")                             
+      281 +                                                              
+      282      fig.add_trace(
+      133 -        go.Scatter(x=iterations, y=scores, mode="lines+markers
+          -",                                                            
+      134 -                   name="Combined Score", line=dict(color="blu
+          -e", width=2),                                                 
+      135 -                   marker=dict(size=8)),                      
+      136 -        row=1, col=1                                          
+      283 +        go.Bar(x=bar_names, y=bar_vals, marker_color=bar_color
+          +s,                                                            
+      284 +               text=[f"{v:.4f}" for v in bar_vals], textpositi
+          +on="outside",                                                 
+      285 +               showlegend=False, hoverinfo="y"),              
+      286 +        row=1, col=1,                                         
+      287      )
+      138 -    fig.add_trace(                                            
+      139 -        go.Scatter(x=iterations, y=hit_rates, mode="lines+mark
+          -ers",                                                         
+      140 -                   name="Hit Rate", line=dict(color="green", w
+          -idth=2, dash="dash"),                                         
+      141 -                   marker=dict(size=8)),                      
+      142 -        row=1, col=1, secondary_y=True                        
+      143 -    )                                                         
+      144 -    fig.update_xaxes(title_text="Iteration", row=1, col=1)    
+      145 -    fig.update_yaxes(title_text="Combined Score", row=1, col=1
+          -)                                                             
+      146 -    fig.update_yaxes(title_text="Hit Rate", row=1, col=1, seco
+          -ndary_y=True)                                                 
+      288 +    if lru is not None and mn is not None and mn > lru:       
+      289 +        captured = (best_hr - lru) / (mn - lru) * 100         
+      290 +        fig.add_hline(y=lru, line_dash="dot", line_color="#8c8
+          +c8c", row=1, col=1)                                           
+      291 +        fig.add_hline(y=mn, line_dash="dot", line_color="#d627
+          +28", row=1, col=1)                                            
+      292 +        fig.add_annotation(                                   
+      293 +            text=f"captures {captured:.0f}% of LRU→MIN headroo
+          +m",                                                           
+      294 +            xref="x domain", yref="y domain", x=0.5, y=1.02,  
+      295 +            showarrow=False, font=dict(size=11, color="#333"),
+          + row=1, col=1,                                                
+      296 +        )                                                     
+      297 +    fig.update_yaxes(title_text="Hit Rate", row=1, col=1)     
+      298  
+      148 -    # 2. Execution time scatter with color coding             
+      299 +    # ---- (1,2) Score frontier ------------------------------
+          +--------------- #                                             
+      300      fig.add_trace(
+      150 -        go.Scatter(x=iterations, y=times, mode="markers",     
+      151 -                   marker=dict(color=colors, size=10,         
+      152 -                               line=dict(width=1, color="black
+          -")),                                                          
+      153 -                   name="Execution Time",                     
+      154 -                   text=[f"Iter {i}: {t:.2f}s" for i, t in zip
+          -(iterations, times)],                                         
+      301 +        go.Scatter(x=iterations, y=scores, mode="markers",    
+      302 +                   marker=dict(color=colors, size=7, line=dict
+          +(width=0.5, color="black")),                                  
+      303 +                   name="candidate score",                    
+      304 +                   text=[f"iter {i}: {s:.4f}" for i, s in zip(
+          +iterations, scores)],                                         
+      305                     hoverinfo="text"),
+      156 -        row=1, col=2                                          
+      306 +        row=1, col=2,                                         
+      307      )
+      158 -    fig.add_hline(y=30, line_dash="dash", line_color="red",   
+      159 -                  annotation_text="Timeout", row=1, col=2)    
+      308 +    fig.add_trace(                                            
+      309 +        go.Scatter(x=iterations, y=score_frontier, mode="lines
+          +",                                                            
+      310 +                   line=dict(color="#1f77b4", width=2.5), name
+          +="best so far"),                                              
+      311 +        row=1, col=2,                                         
+      312 +    )                                                         
+      313 +    if seed is not None:                                      
+      314 +        fig.add_trace(                                        
+      315 +            go.Scatter(x=[seed_iter], y=[seed_score], mode="ma
+          +rkers",                                                       
+      316 +                       marker=dict(symbol="x", size=13, color=
+          +"#d62728",                                                    
+      317 +                                   line=dict(width=2)),       
+      318 +                       name="LRU seed (penalized artifact)",  
+      319 +                       hovertext=["LRU seed: score halved by b
+          +aseline calibration boundary"],                               
+      320 +                       hoverinfo="text"),                     
+      321 +            row=1, col=2,                                     
+      322 +        )                                                     
+      323      fig.update_xaxes(title_text="Iteration", row=1, col=2)
+      161 -    fig.update_yaxes(title_text="Time (seconds)", row=1, col=2
+          -)                                                             
+      324 +    fig.update_yaxes(title_text="Combined Score", row=1, col=2
+          +)                                                             
+      325  
+      163 -    # 3. Evolution tree (simplified as scatter with parent lin
+          -ks)                                                           
+      164 -    tree_x, tree_y, tree_colors, tree_texts, tree_sizes = [], 
+          -[], [], [], []                                                
+      165 -    edge_x, edge_y = [], []                                   
+      326 +    # ---- (2,1) Hit rate per iteration + baseline references 
+          +--------------- #                                             
+      327 +    fig.add_trace(                                            
+      328 +        go.Scatter(x=iterations, y=hit_rates, mode="markers", 
+      329 +                   marker=dict(color=colors, size=7, line=dict
+          +(width=0.5, color="black")),                                  
+      330 +                   name="candidate hit rate",                 
+      331 +                   text=[f"iter {i}: {h:.4f}" for i, h in zip(
+          +iterations, hit_rates)],                                      
+      332 +                   hoverinfo="text", showlegend=False),       
+      333 +        row=2, col=1,                                         
+      334 +    )                                                         
+      335 +    fig.add_trace(                                            
+      336 +        go.Scatter(x=iterations, y=hr_frontier, mode="lines", 
+      337 +                   line=dict(color="#2ca02c", width=2.5),     
+      338 +                   name="best hit rate so far", showlegend=Fal
+          +se),                                                          
+      339 +        row=2, col=1,                                         
+      340 +    )                                                         
+      341 +    for val, color, label in ((lru, "#8c8c8c", "LRU"),        
+      342 +                              (lfu, "#1f77b4", "LFU"),        
+      343 +                              (mn, "#d62728", "MIN")):        
+      344 +        if val is not None:                                   
+      345 +            fig.add_hline(y=val, line_dash="dash", line_color=
+          +color,                                                        
+      346 +                          annotation_text=f"{label} {val:.4f}"
+          +,                                                             
+      347 +                          annotation_position="right",        
+      348 +                          annotation_font_size=10, row=2, col=
+          +1)                                                            
+      349 +    fig.update_xaxes(title_text="Iteration", row=2, col=1)    
+      350 +    fig.update_yaxes(title_text="Hit Rate", row=2, col=1)     
+      351  
+      167 -    # Layout: position by generation (x) and score (y)        
+      168 -    for prog in programs:                                     
+      169 -        tree_x.append(prog.get("generation", 0))              
+      170 -        tree_y.append(prog.get("metrics", {}).get("combined_sc
+          -ore", 0))                                                     
+      171 -        tree_colors.append(prog.get("metadata", {}).get("islan
+          -d", 0))                                                       
+      172 -        tree_texts.append(f"ID: {prog['id'][:8]}...\nScore: {p
+          -rog.get('metrics', {}).get('combined_score', 0):.4f}\nGen: {pr
+          -og.get('generation', 0)}")                                    
+      173 -        tree_sizes.append(15)                                 
+      352 +    # ---- (2,2) Execution time + scoring thresholds ---------
+          +--------------- #                                             
+      353 +    fig.add_trace(                                            
+      354 +        go.Scatter(x=iterations, y=times, mode="markers",     
+      355 +                   marker=dict(color=colors, size=8, line=dict
+          +(width=0.5, color="black")),                                  
+      356 +                   name="eval time",                          
+      357 +                   text=[f"iter {i}: {t:.2f}s (tf={tf})" for i
+          +, t, tf in                                                    
+      358 +                         zip(iterations, times, tfactors)],   
+      359 +                   hoverinfo="text", showlegend=False),       
+      360 +        row=2, col=2,                                         
+      361 +    )                                                         
+      362 +    fig.add_hline(y=FAST_THRESHOLD, line_dash="dash", line_col
+          +or="#2ca02c",                                                 
+      363 +                  annotation_text="2s — speed bonus below",   
+      364 +                  annotation_position="right", annotation_font
+          +_size=10, row=2, col=2)                                       
+      365 +    fig.add_hline(y=SLOW_THRESHOLD, line_dash="dot", line_colo
+          +r="#ff7f0e",                                                  
+      366 +                  annotation_text="25s — penalty above",      
+      367 +                  annotation_position="right", annotation_font
+          +_size=10, row=2, col=2)                                       
+      368 +    fig.add_hline(y=TIMEOUT, line_dash="dash", line_color="#d6
+          +2728",                                                        
+      369 +                  annotation_text="30s — timeout",            
+      370 +                  annotation_position="right", annotation_font
+          +_size=10, row=2, col=2)                                       
+      371 +    fig.update_xaxes(title_text="Iteration", row=2, col=2)    
+      372 +    fig.update_yaxes(title_text="Time (seconds)", row=2, col=2
+          +)                                                             
+      373  
+      175 -        parent_id = prog.get("parent_id")                     
+      176 -        if parent_id:                                         
+      177 -            parent = next((p for p in programs if p["id"] == p
+          -arent_id), None)                                              
+      178 -            if parent:                                        
+      179 -                edge_x.extend([parent.get("generation", 0), pr
+          -og.get("generation", 0), None])                               
+      180 -                edge_y.extend([parent.get("metrics", {}).get("
+          -combined_score", 0),                                          
+      181 -                               prog.get("metrics", {}).get("co
+          -mbined_score", 0), None])                                     
+      182 -                                                              
+      374 +    # ---- (3,1) Evolution tree (generation vs score) --------
+          +--------------- #                                             
+      375 +    edge_x, edge_y = [], []                                   
+      376 +    prog_by_id = {p["id"]: p for p in programs}               
+      377 +    for p in programs:                                        
+      378 +        pid = p.get("parent_id")                              
+      379 +        parent = prog_by_id.get(pid)                          
+      380 +        if parent:                                            
+      381 +            edge_x += [parent.get("generation", 0), p.get("gen
+          +eration", 0), None]                                           
+      382 +            edge_y += [m(parent, "combined_score"), m(p, "comb
+          +ined_score"), None]                                           
+      383      fig.add_trace(
+      384          go.Scatter(x=edge_x, y=edge_y, mode="lines",
+      185 -                   line=dict(color="gray", width=1),          
+      385 +                   line=dict(color="lightgray", width=1),     
+      386                     showlegend=False, hoverinfo="skip"),
+      187 -        row=2, col=1                                          
+      387 +        row=3, col=1,                                         
+      388      )
+      389      fig.add_trace(
+      190 -        go.Scatter(x=tree_x, y=tree_y, mode="markers",        
+      191 -                   marker=dict(color=tree_colors, colorscale="
+          -Viridis",                                                     
+      192 -                               size=tree_sizes, showscale=True
+          -,                                                             
+      193 -                               colorbar=dict(title="Island", r
+          -ow=2, col=1)),                                                
+      194 -                   text=tree_texts, hoverinfo="text",         
+      195 -                   name="Programs"),                          
+      196 -        row=2, col=1                                          
+      390 +        go.Scatter(                                           
+      391 +            x=[p.get("generation", 0) for p in programs],     
+      392 +            y=[m(p, "combined_score") for p in programs],     
+      393 +            mode="markers",                                   
+      394 +            marker=dict(color=[p.get("metadata", {}).get("isla
+          +nd", 0) for p in programs],                                   
+      395 +                        colorscale="Viridis", size=9, showscal
+          +e=True,                                                       
+      396 +                        colorbar=dict(title="Island", len=0.28
+          +, y=0.14)),                                                   
+      397 +            text=[f"id {p['id'][:8]}  gen {p.get('generation',
+          + 0)}  "                                                       
+      398 +                  f"score {m(p, 'combined_score'):.4f}" for p 
+          +in programs],                                                 
+      399 +            hoverinfo="text", showlegend=False),              
+      400 +        row=3, col=1,                                         
+      401      )
+      198 -    fig.update_xaxes(title_text="Generation", row=2, col=1)   
+      199 -    fig.update_yaxes(title_text="Combined Score", row=2, col=1
+          -)                                                             
+      402 +    fig.update_xaxes(title_text="Generation", row=3, col=1)   
+      403 +    fig.update_yaxes(title_text="Combined Score", row=3, col=1
+          +)                                                             
+      404  
+      201 -    # 4. Island population over time                          
+      202 -    island_counts = {}                                        
+      203 -    for prog in programs:                                     
+      204 -        island = prog.get("metadata", {}).get("island", -1)   
+      205 -        iteration = prog.get("_iteration", 0)                 
+      206 -        island_counts.setdefault(island, []).append((iteration
+          -, 1))                                                         
+      207 -                                                              
+      208 -    for island, entries in sorted(island_counts.items()):     
+      209 -        entries.sort(key=lambda x: x[0])                      
+      210 -        x_vals = [e[0] for e in entries]                      
+      211 -        y_vals = [e[1] for e in entries]                      
+      405 +    # ---- (3,2) Best score per island over iterations -------
+          +--------------- #                                             
+      406 +    islands = {}                                              
+      407 +    for p in programs:                                        
+      408 +        isl = p.get("metadata", {}).get("island", -1)         
+      409 +        islands.setdefault(isl, []).append((p["_iteration"], m
+          +(p, "combined_score")))                                       
+      410 +    palette = ["#1f77b4", "#2ca02c", "#ff7f0e", "#9467bd", "#d
+          +62728"]                                                       
+      411 +    for idx, (isl, pts) in enumerate(sorted(islands.items())):
+      412 +        pts.sort(key=lambda x: x[0])                          
+      413 +        xs = [x for x, _ in pts]                              
+      414 +        ys = running_max([y for _, y in pts])                 
+      415          fig.add_trace(
+      213 -            go.Bar(x=x_vals, y=y_vals, name=f"Island {island}"
+          -,                                                             
+      214 -                   opacity=0.7),                              
+      215 -            row=2, col=2                                      
+      416 +            go.Scatter(x=xs, y=ys, mode="lines+markers",      
+      417 +                       line=dict(color=palette[idx % len(palet
+          +te)], width=2),                                               
+      418 +                       marker=dict(size=5), name=f"Island {isl
+          +}"),                                                          
+      419 +            row=3, col=2,                                     
+      420          )
+      217 -    fig.update_xaxes(title_text="Iteration", row=2, col=2)    
+      218 -    fig.update_yaxes(title_text="Programs Added", row=2, col=2
+          -)                                                             
+      421 +    fig.update_xaxes(title_text="Iteration", row=3, col=2)    
+      422 +    fig.update_yaxes(title_text="Best Score So Far", row=3, co
+          +l=2)                                                          
+      423  
+      220 -    # 5. Score vs Complexity                                  
+      221 -    complexities = [p.get("complexity", 0) for p in evolved]  
+      222 -    fig.add_trace(                                            
+      223 -        go.Scatter(x=complexities, y=scores, mode="markers",  
+      224 -                   marker=dict(color=colors, size=10, line=dic
+          -t(width=1, color="black")),                                   
+      225 -                   text=[f"Iter {i}" for i in iterations],    
+      226 -                   hoverinfo="text", name="Score vs Complexity
+          -"),                                                           
+      227 -        row=3, col=1                                          
+      424 +    fig.update_layout(                                        
+      425 +        title="OpenEvolve Cache-Policy Evolution Report — 16MB
+          +, msr_hm_0 (50k)",                                            
+      426 +        height=1300, width=1400, template="plotly_white",     
+      427 +        legend=dict(orientation="h", yanchor="bottom", y=1.04,
+          + xanchor="right", x=1),                                       
+      428      )
+      229 -    fig.update_xaxes(title_text="Complexity", row=3, col=1)   
+      230 -    fig.update_yaxes(title_text="Combined Score", row=3, col=1
+          -)                                                             
+      429  
+      232 -    # 6. Hit Rate vs Cache Items                              
+      233 -    cache_items = []                                          
+      234 -    for p in evolved:                                         
+      235 -        artifacts = p.get("metrics", {}).get("artifacts", {}) 
+      236 -        cache_items.append(artifacts.get("cache_items", 0))   
+      430 +    # ---- Summary KPIs --------------------------------------
+          +--------------- #                                             
+      431 +    timeout_count = sum(1 for p in programs if art(p, "error")
+          + == "timeout")                                                
+      432 +    error_count = sum(1 for p in programs                     
+      433 +                      if art(p, "error") and art(p, "error") !
+          += "timeout")                                                  
+      434  
+      238 -    fig.add_trace(                                            
+      239 -        go.Scatter(x=cache_items, y=hit_rates, mode="markers",
+      240 -                   marker=dict(color=colors, size=10, line=dic
+          -t(width=1, color="black")),                                   
+      241 -                   text=[f"Iter {i}" for i in iterations],    
+      242 -                   hoverinfo="text", name="Hit Rate vs Cache I
+          -tems"),                                                       
+      243 -        row=3, col=2                                          
+      244 -    )                                                         
+      245 -    fig.update_xaxes(title_text="Cache Items", row=3, col=2)  
+      246 -    fig.update_yaxes(title_text="Hit Rate", row=3, col=2)     
+      435 +    def pp(x):                                                
+      436 +        return f"{x * 100:+.2f} pp"                           
+      437  
+      248 -    # Layout                                                  
+      249 -    fig.update_layout(                                        
+      250 -        title="OpenEvolve Evolution Report",                  
+      251 -        height=1200,                                          
+      252 -        width=1400,                                           
+      253 -        showlegend=True,                                      
+      254 -        template="plotly_white"                               
+      255 -    )                                                         
+      438 +    rows = [                                                  
+      439 +        ("Programs evaluated", str(len(programs))),           
+      440 +        ("Best hit rate (evolved)", f"{best_hr:.4f}"),        
+      441 +        ("Best combined score", f"{best_score:.4f}"),         
+      442 +    ]                                                         
+      443 +    if lru is not None:                                       
+      444 +        rows.append(("LRU baseline (hit rate)", f"{lru:.4f}"))
+      445 +        rows.append(("Δ vs LRU", pp(best_hr - lru)))          
+      446 +    if lfu is not None:                                       
+      447 +        rows.append(("LFU baseline (hit rate)", f"{lfu:.4f}"))
+      448 +        rows.append(("Δ vs LFU", pp(best_hr - lfu)))          
+      449 +    if mn is not None:                                        
+      450 +        rows.append(("Belady/MIN ceiling (hit rate)", f"{mn:.4
+          +f}"))                                                         
+      451 +        if lru is not None and mn > lru:                      
+      452 +            rows.append(("Headroom captured (LRU→MIN)",       
+      453 +                         f"{(best_hr - lru) / (mn - lru) * 100
+          +:.1f}%"))                                                     
+      454 +    rows += [                                                 
+      455 +        ("Timeouts", str(timeout_count)),                     
+      456 +        ("Errors", str(error_count)),                         
+      457 +        ("Log file", str(log_path or "N/A")),                 
+      458 +    ]                                                         
+      459  
+      257 -    # Summary statistics                                      
+      258 -    best_prog = max(programs, key=lambda p: p.get("metrics", {
+          -}).get("combined_score", 0))                                  
+      259 -    best_score = best_prog.get("metrics", {}).get("combined_sc
+          -ore", 0)                                                      
+      260 -    best_hit_rate = best_prog.get("metrics", {}).get("hit_rate
+          -", 0)                                                         
+      261 -    total_programs = len(programs)                            
+      262 -    timeout_count = sum(1 for p in programs if p.get("metrics"
+          -, {}).get("artifacts", {}).get("error") == "timeout")         
+      263 -    error_count = sum(1 for p in programs if p.get("metrics", 
+          -{}).get("artifacts", {}).get("error") and p.get("metrics", {})
+          -.get("artifacts", {}).get("error") != "timeout")              
+      264 -                                                              
+      460 +    row_html = "".join(                                       
+      461 +        f'<tr><td style="padding:6px 14px;"><strong>{k}:</stro
+          +ng></td>'                                                     
+      462 +        f'<td style="padding:6px 14px;">{v}</td></tr>' for k, 
+          +v in rows                                                     
+      463 +    )                                                         
+      464      summary_html = f"""
+      266 -    <div style="font-family: sans-serif; padding: 20px; backgr
+          -ound: #f8f9fa; border-bottom: 2px solid #dee2e6;">            
+      267 -        <h2>Evolution Summary</h2>                            
+      268 -        <table style="border-collapse: collapse; width: 100%;"
+          ->                                                             
+      269 -            <tr><td style="padding: 8px;"><strong>Total Progra
+          -ms:</strong></td><td>{total_programs}</td></tr>               
+      270 -            <tr><td style="padding: 8px;"><strong>Best Combine
+          -d Score:</strong></td><td>{best_score:.4f}</td></tr>          
+      271 -            <tr><td style="padding: 8px;"><strong>Best Hit Rat
+          -e:</strong></td><td>{best_hit_rate:.4f}</td></tr>             
+      272 -            <tr><td style="padding: 8px;"><strong>Timeouts:</s
+          -trong></td><td>{timeout_count}</td></tr>                      
+      273 -            <tr><td style="padding: 8px;"><strong>Errors:</str
+          -ong></td><td>{error_count}</td></tr>                          
+      274 -            <tr><td style="padding: 8px;"><strong>Log File:</s
+          -trong></td><td>{log_path or 'N/A'}</td></tr>                  
+      275 -        </table>                                              
+      465 +    <div style="font-family: sans-serif; padding: 20px 24px; b
+          +ackground:#f8f9fa;                                            
+      466 +        border-bottom:2px solid #dee2e6;">                    
+      467 +        <h2 style="margin-top:0;">Evolution Summary</h2>      
+      468 +        <table style="border-collapse: collapse;">{row_html}</
+          +table>                                                        
+      469      </div>
+      470      """
+      471  
+      472      fig_html = fig.to_html(include_plotlyjs=True)
+      280 -    # Inject summary at the top                               
+      281 -    fig_html = fig_html.replace("<body>", f"<body>{summary_htm
+          -l}")                                                          
+      473 +    fig_html = fig_html.replace("<body>", f"<body>{glossary_ht
+          +ml()}{summary_html}")                                         
+      474  
+      475      with open(output_path, "w") as f:
+      476          f.write(fig_html)
+      285 -                                                              
+      477      print(f"Report saved to: {output_path}")
+      478  
+      479  
+      480  def main():
+      290 -    parser = argparse.ArgumentParser(description="Visualize Op
+          -enEvolve results")                                            
+      481 +    parser = argparse.ArgumentParser(description="Visualize Op
+          +enEvolve cache results")                                      
+      482      parser.add_argument("--db-dir", default="./openevolve_db",
+            help="Database directory")
+      483      parser.add_argument("--log-dir", default="./openevolve_out
+           put/logs", help="Log directory")
+      484      parser.add_argument("--output", default="evolution_report.
+           html", help="Output HTML file")
+     ...
+      489          print("No programs found in database directory.")
+      490          return
+      491  
+      301 -    log_path, _ = load_log(args.log_dir)                      
+      302 -    generate_html_report(programs, log_path, args.output)     
+      492 +    log_path = load_log(args.log_dir)                         
+      493 +    baselines = compute_baselines()                           
+      494 +    if baselines:                                             
+      495 +        print(f"[baselines] LRU={baselines['LRU']:.4f}  "     
+      496 +              f"LFU={baselines['LFU']:.4f}  MIN={baselines['MI
+          +N']:.4f}")                                                    
+      497 +    generate_html_report(programs, log_path, args.output, base
+          +lines)                                                        
+      498  
+      499  
+      500  if __name__ == "__main__":
+
+● Now let me run it to confirm it works end-to-end and produces the report.
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python
+      visualize.py 2>&1 | tail -20 && echo "=== output ===" && ls -la
+      evolution_report.html baselines_c…)
+  ⎿  Error: Exit code 2
+     Traceback (most recent call last):
+       File "/home/ubuntu/cache_evolution/visualize.py", line 19, in <module>
+         import plotly.graph_objects as go
+     ModuleNotFoundError: No module named 'plotly'
+     === output ===
+
+● Bash(cd ~/cache_evolution && for py in /home/ubuntu/ds5110_project/bin/python
+      python3 /usr/bin/python3; do echo "=== $py ==="; $py -c "import plotly,
+      sys; print('plo…)
+  ⎿  === /home/ubuntu/ds5110_project/bin/python ===
+     Traceback (most recent call last):
+     === python3 ===
+     … +5 lines (ctrl+o to expand)
+
+● plotly isn't installed in any env. Let me check what plotting libs are
+  available before deciding whether to install plotly or switch the script to
+  something already present.
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python -c "
+      for mod in ('matplotlib','networkx','plotly','pandas','numpy'):…)
+  ⎿  matplotlib   MISSING
+     networkx     MISSING
+     plotly       MISSING
+     … +2 lines (ctrl+o to expand)
+
+● None of the plotting libraries are installed — the original visualize.py was
+  never actually runnable here. plotly is pure-Python, so let me install it into
+  the venv.
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python -m pip
+      install plotly 2>&1 | tail -8)
+  ⎿    Using cached packaging-26.2-py3-none-any.whl.metadata (3.5 kB)
+     Downloading plotly-6.8.0-py3-none-any.whl (9.9 MB)
+        ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.9/9.9 MB 152.6 MB/s eta
+     … +6 lines (ctrl+o to expand)
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python
+      visualize.py 2>&1 | tail -20 && echo "=== outputs ===" && ls -la
+      evolution_report.html baselines_…)
+  ⎿  [baselines] LRU=0.4793  LFU=0.5036  MIN=0.5523
+     Report saved to: evolution_report.html
+     === outputs ===
+     … +10 lines (ctrl+o to expand)
+
+● Works. Let me sanity-check the generated HTML contains the key content and
+  correct numbers.
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python -c "
+      html=open('evolution_report.html').read()…)
+  ⎿  OK   Glossary block
+     OK   GDSF defined
+     OK   MAP-Elites defined
+     … +6 lines (ctrl+o to expand)
+
+● Done — visualize.py is rewritten, runs clean, and produces
+  evolution_report.html (4.9 MB, self-contained). One setup note: none of the
+  plotting libs were actually installed in the venv, so the old script never ran
+  here — I installed plotly (pure-Python, into ~/ds5110_project) and dropped
+  the unused matplotlib/networkx deps entirely.
+
+  What changed, mapped to your asks
+
+  1. Baseline comparison (headline chart) — new bar panel: LRU 0.4793 · LFU
+  0.5036 · Evolved 0.5311 · MIN 0.5523, with the LRU/MIN band drawn and
+  "captures 71% of LRU→MIN headroom" annotated. Baselines are computed live (not
+  hardcoded) — LRU/LFU from cache_simulator.py, MIN from compute_optimal.py —
+  and cached to baselines_cache.json so reruns are instant.
+
+  2. Running-best frontier — score panel now plots the staircase best-so-far
+  line over the candidate scatter.
+
+  3. Real iteration numbers — uses each program's iteration_found instead of
+  reinventing them from timestamp rank, so the charts line up with "best at
+  iteration 38."
+
+  4. The 2s line — execution-time panel now draws the 2s speed-bonus, 25s, and
+  30s lines, and every point is colored by scoring status (green = earned the
+  1.05 bonus, purple = penalized, red = timeout/error).
+
+  5. Seed artifact flagged — the LRU seed's penalized 0.2516 is marked with a
+  red ✕ and a hover note ("score halved by baseline calibration boundary"), so
+  the dip doesn't read as a real bad policy. Also called out explicitly in the
+  glossary.
+
+  6. Island panel fixed — the old rug-of-1-bars is replaced with
+  best-score-so-far per island over iterations (actually shows island evolution
+  working).
+
+  7. Dead code removed — matplotlib, networkx, and the never-consumed
+  build_evolution_tree() graph are gone.
+
+  8. Context KPIs — summary table now shows Δ vs LRU (+5.18 pp), Δ vs LFU (+2.75
+  pp), the MIN ceiling, and headroom captured (71%).
+
+  Plus the background/glossary you asked for: a collapsible "Background &
+  Glossary" block at the top defining the task, hit rate, LRU/LFU/FIFO, GDSF,
+  Belady/MIN, the combined-score formula and time_factor, and the OpenEvolve
+  terms (iteration, generation, island, MAP-Elites, evolution tree).
+
+  Open evolution_report.html in a browser to view it. Want me to tweak the
+  layout (e.g., move the headline bar to full-width up top), or is this a good
+  base to build the report around?
+
+✻ Sautéed for 3m 58s
+
+※ recap: Goal: build the OpenEvolve cache-policy report. We finished rewriting visualize.py, which now generates evolution_report.html with baseline comparisons, glossary, and KPIs. Next: open the report in a browser to review, then decide on layout tweaks or start the written report. (disable recaps in /config)
+
+❯ The graphs are a bit bunched together to the left of the page, and some text  
+  overlaps. If you could spread them out horizontally a bit more. I also want   
+  to add a title at the top "Evolving Cache Replacement Policies with           
+  OpenEvolve".                                                                  
+
+● A couple of things are going on: the figure is pinned to a fixed 1400 px (so
+  in a wider window it bunches left), the legend and the "headroom" annotation
+  collide with the row-1 subplot titles, and the 25s/30s threshold labels stack.
+  Let me fix all of that and add the page title.
+
+  First, the title + responsive width and the headroom-into-title change. Let me
+  read the relevant section to edit precisely.
+
+  Read 1 file (ctrl+o to expand)
+
+● Now let me read the make_subplots opening line and the layout/to_html section.
+
+  Read 1 file (ctrl+o to expand)
+
+● Now I'll make the edits. First, compute the headroom string before the
+  subplots and bake it into the title (so it no longer collides), and widen the
+  spacing:
+
+● Update(visualize.py)
+  ⎿  Added 9 lines, removed 3 lines
+      250      b = baselines or {}
+      251      lru, lfu, mn = b.get("LRU"), b.get("LFU"), b.get("MIN")
+      252  
+      253 +    if lru is not None and mn is not None and mn > lru:       
+      254 +        captured = (best_hr - lru) / (mn - lru) * 100         
+      255 +        bar_title = f"Hit Rate: Evolved vs Baselines — capture
+          +s {captured:.0f}% of LRU→MIN headroom"                        
+      256 +    else:                                                     
+      257 +        bar_title = "Hit Rate: Evolved vs Baselines vs Optimal
+          + Ceiling"                                                     
+      258 +                                                              
+      259      fig = make_subplots(
+      260          rows=3, cols=2,
+      261          subplot_titles=(
+      256 -            "Hit Rate: Evolved vs Baselines vs Optimal Ceiling
+          -",                                                            
+      262 +            bar_title,                                        
+      263              "Score Progress (best-so-far frontier)",
+      264              "Hit Rate per Iteration (with baseline references)
+           ",
+      265              "Execution Time per Iteration (scoring thresholds)
+           ",
+     ...
+      271              [{"type": "scatter"}, {"type": "scatter"}],
+      272              [{"type": "scatter"}, {"type": "scatter"}],
+      273          ],
+      268 -        vertical_spacing=0.10,                                
+      269 -        horizontal_spacing=0.10,                              
+      274 +        vertical_spacing=0.11,                                
+      275 +        horizontal_spacing=0.14,                              
+      276      )
+      277  
+      278      # ---- (1,1) Headline: baseline comparison bar -----------
+           --------------- #
+
+● Now remove the colliding headroom annotation (keep the reference hlines):
+
+● Update(visualize.py)
+  ⎿  Added 3 lines, removed 7 lines
+      292          row=1, col=1,
+      293      )
+      294      if lru is not None and mn is not None and mn > lru:
+      295 -        captured = (best_hr - lru) / (mn - lru) * 100         
+      295          fig.add_hline(y=lru, line_dash="dot", line_color="#8c8
+           c8c", row=1, col=1)
+      296          fig.add_hline(y=mn, line_dash="dot", line_color="#d627
+           28", row=1, col=1)
+      298 -        fig.add_annotation(                                   
+      299 -            text=f"captures {captured:.0f}% of LRU→MIN headroo
+          -m",                                                           
+      300 -            xref="x domain", yref="y domain", x=0.5, y=1.02,  
+      301 -            showarrow=False, font=dict(size=11, color="#333"),
+          - row=1, col=1,                                                
+      302 -        )                                                     
+      303 -    fig.update_yaxes(title_text="Hit Rate", row=1, col=1)     
+      297 +    # Headroom so the "outside" bar labels are not clipped at 
+          +the top.                                                      
+      298 +    fig.update_yaxes(title_text="Hit Rate", range=[0, max(bar_
+          +vals) * 1.18],                                                
+      299 +                     row=1, col=1)                            
+      300  
+      301      # ---- (1,2) Score frontier ------------------------------
+           --------------- #
+      302      fig.add_trace(
+
+● Now stagger the time-threshold labels (25s/30s currently stack) and the
+  baseline labels. Let me find them:
+
+  Read 1 file (ctrl+o to expand)
+
+● Update(visualize.py)
+  ⎿  Added 1 line, removed 1 line
+      346          if val is not None:
+      347              fig.add_hline(y=val, line_dash="dash", line_color=
+           color,
+      348                            annotation_text=f"{label} {val:.4f}"
+           ,
+      349 -                          annotation_position="right",        
+      349 +                          annotation_position="top left",     
+      350                            annotation_font_size=10, row=2, col=
+           1)
+      351      fig.update_xaxes(title_text="Iteration", row=2, col=1)
+      352      fig.update_yaxes(title_text="Hit Rate", row=2, col=1)
+
+● Update(visualize.py)
+  ⎿  Added 6 lines, removed 3 lines
+      363      )
+      364      fig.add_hline(y=FAST_THRESHOLD, line_dash="dash", line_col
+           or="#2ca02c",
+      365                    annotation_text="2s — speed bonus below",
+      366 -                  annotation_position="right", annotation_font
+          -_size=10, row=2, col=2)                                       
+      366 +                  annotation_position="bottom right", annotati
+          +on_font_size=10,                                              
+      367 +                  row=2, col=2)                               
+      368      fig.add_hline(y=SLOW_THRESHOLD, line_dash="dot", line_colo
+           r="#ff7f0e",
+      369                    annotation_text="25s — penalty above",
+      369 -                  annotation_position="right", annotation_font
+          -_size=10, row=2, col=2)                                       
+      370 +                  annotation_position="top left", annotation_f
+          +ont_size=10,                                                  
+      371 +                  row=2, col=2)                               
+      372      fig.add_hline(y=TIMEOUT, line_dash="dash", line_color="#d6
+           2728",
+      373                    annotation_text="30s — timeout",
+      372 -                  annotation_position="right", annotation_font
+          -_size=10, row=2, col=2)                                       
+      374 +                  annotation_position="top right", annotation_
+          +font_size=10,                                                 
+      375 +                  row=2, col=2)                               
+      376      fig.update_xaxes(title_text="Iteration", row=2, col=2)
+      377      fig.update_yaxes(title_text="Time (seconds)", row=2, col=2
+           )
+      378  
+
+● Now the layout (responsive width, legend to the bottom, margins) and the
+  responsive to_html + page title:
+
+● Update(visualize.py)
+  ⎿  Added 5 lines, removed 2 lines
+      428  
+      429      fig.update_layout(
+      430          title="OpenEvolve Cache-Policy Evolution Report — 16MB
+           , msr_hm_0 (50k)",
+      431 -        height=1300, width=1400, template="plotly_white",     
+      432 -        legend=dict(orientation="h", yanchor="bottom", y=1.04,
+          - xanchor="right", x=1),                                       
+      431 +        title_x=0.5,                                          
+      432 +        height=1400, autosize=True, template="plotly_white",  
+      433 +        margin=dict(l=80, r=80, t=120, b=110),                
+      434 +        legend=dict(orientation="h", yanchor="top", y=-0.05,  
+      435 +                    xanchor="center", x=0.5),                 
+      436      )
+      437  
+      438      # ---- Summary KPIs --------------------------------------
+           --------------- #
+
+● Update(visualize.py)
+  ⎿  Added 10 lines, removed 2 lines
+      477      </div>
+      478      """
+      479  
+      480 -    fig_html = fig.to_html(include_plotlyjs=True)             
+      481 -    fig_html = fig_html.replace("<body>", f"<body>{glossary_ht
+          -ml()}{summary_html}")                                         
+      480 +    page_title = (                                            
+      481 +        '<h1 style="font-family:sans-serif; text-align:center;
+          + '                                                            
+      482 +        'padding:28px 16px 4px; margin:0; color:#1a2a3a;">'   
+      483 +        'Evolving Cache Replacement Policies with OpenEvolve</
+          +h1>'                                                          
+      484 +    )                                                         
+      485  
+      486 +    fig_html = fig.to_html(include_plotlyjs=True, default_widt
+          +h="100%",                                                     
+      487 +                           default_height="1400px")           
+      488 +    fig_html = fig_html.replace(                              
+      489 +        "<body>", f"<body>{page_title}{glossary_html()}{summar
+          +y_html}")                                                     
+      490 +                                                              
+      491      with open(output_path, "w") as f:
+      492          f.write(fig_html)
+      493      print(f"Report saved to: {output_path}")
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python
+      visualize.py 2>&1 | tail -5 && /home/ubuntu/ds5110_project/bin/python -c "
+      html=open('evolution_r…)
+  ⎿  [baselines] LRU=0.4793  LFU=0.5036  MIN=0.5523
+     Report saved to: evolution_report.html
+     OK   Page H1
+     … +3 lines (ctrl+o to expand)
+
+● Regenerated and verified. Here's what changed to fix the layout:
+
+  Spread horizontally / no more left-bunching — the figure was pinned to a fixed
+  width=1400, so in a wider window it hugged the left. It's now autosize and
+  rendered at default_width="100%", so it fills the browser width. I also bumped
+  horizontal_spacing 0.10 → 0.14 and vertical_spacing → 0.11 so columns aren't
+  crowded.
+
+  Text overlaps fixed:
+  - The "captures 71% of headroom" note was sitting on top of the row-1 subplot
+  title — it's now baked into that subplot's title instead of floating over it.
+  - The bar panel got an explicit y-range with 18% headroom so the "outside"
+  value labels (0.4793, etc.) aren't clipped at the top.
+  - The execution-time threshold labels (2s / 25s / 30s) were stacking on the
+  right edge — now staggered: 2s bottom-right, 25s top-left, 30s top-right.
+  - The LRU/LFU/MIN reference labels moved off the right gutter to top-left,
+  inside their panels.
+  - The legend moved from overlapping the row-1 titles to a centered horizontal 
+  strip below the charts, with a taller top margin for the title.
+
+  Page title added — a centered <h1> "Evolving Cache Replacement Policies with 
+  OpenEvolve" now sits at the very top, above the glossary.
+
+  Reload evolution_report.html in the browser to see it. If any panel still
+  feels tight, the easiest next lever is bumping overall height (currently 1400)
+  or giving the bottom-row charts a bit more vertical room — let me know how it
+  looks.
+
+✻ Cogitated for 2m 31s
+
+※ recap: Goal: build and report on the OpenEvolve cache-policy project. We just rewrote visualize.py to add baselines, glossary, KPIs, a page title, and fixed the cramped layout. Next: you reload evolution_report.html and confirm it looks right. (disable recaps in /config)
+
+❯ It looks good. Two things: IN background FIFO is mentioned as a baseline, but 
+  we do not actually use that. And for the last plot "Best Score per Island     
+  Over Iterations" it includes an unecessary heatmap legend.                    
+● Both easy fixes. Removing FIFO from the glossary (we only run LRU and LFU),
+  and removing the Viridis colorbar that's bleeding into the island plot.
+
+● Update(visualize.py)
+  ⎿  Removed 2 lines
+      173            longest time. Simple and strong; this is the seed th
+           e evolution starts from.</li>
+      174            <li><b>LFU</b> (Least Frequently Used) &mdash; evict
+            the object with the fewest
+      175            accesses so far.</li>
+      176 -          <li><b>FIFO</b> (First In First Out) &mdash; evict t
+          -he oldest-inserted object,                                    
+      177 -          regardless of how often it is used.</li>            
+      176          </ul>
+      177  
+      178          <p><b>GDSF</b> (Greedy-Dual-Size-Frequency) &mdash; th
+           e strategy the evolution
+
+● Update(visualize.py)
+  ⎿  Added 1 line, removed 2 lines
+      395              y=[m(p, "combined_score") for p in programs],
+      396              mode="markers",
+      397              marker=dict(color=[p.get("metadata", {}).get("isla
+           nd", 0) for p in programs],
+      398 -                        colorscale="Viridis", size=9, showscal
+          -e=True,                                                       
+      399 -                        colorbar=dict(title="Island", len=0.28
+          -, y=0.14)),                                                   
+      398 +                        colorscale="Viridis", size=9, showscal
+          +e=False),                                                     
+      399              text=[f"id {p['id'][:8]}  gen {p.get('generation',
+            0)}  "
+      400                    f"score {m(p, 'combined_score'):.4f}" for p 
+           in programs],
+      401              hoverinfo="text", showlegend=False),
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python
+      visualize.py 2>&1 | tail -3 && /home/ubuntu/ds5110_project/bin/python -c "
+      html=open('evolution_r…)
+  ⎿  [baselines] LRU=0.4793  LFU=0.5036  MIN=0.5523
+     Report saved to: evolution_report.html
+     FIFO removed from glossary: True
+     colorbar removed: False
+
+● The "colorbar" match is just the embedded plotly.js library text (4.8 MB
+  bundle defines that attribute) — not an actual rendered colorbar. Let me
+  confirm the trace itself no longer requests one:
+
+● Bash(cd ~/cache_evolution && /home/ubuntu/ds5110_project/bin/python -c "
+      html=open('evolution_report.html').read()…)
+  ⎿  showscale:true present in figure data: False
+
+● Both done:
+
+  - FIFO removed from the glossary's baseline list — it now lists only LRU and
+  LFU, matching what's actually computed and shown.
+  - Colorbar gone — the Viridis "Island" scale on the evolution-tree scatter was
+  showscale=True with a colorbar positioned down in the row-3 area, so it
+  visually bled into the island plot. Set to showscale=False; the tree still
+  color-codes islands, and the island plot keeps its own clean line legend.
+  (Confirmed no showscale:true remains in the figure data; the "colorbar" string
+  still in the file is just the embedded plotly.js library.)
+
+  Reload evolution_report.html to see it.
+
+✻ Sautéed for 42s
+
+❯ Okay, the html report looks good.                                             
+
+● Great — glad it looks good. The visualization is in solid shape now:
+  responsive layout, the headline baseline/MIN comparison, the score/hit-rate
+  frontiers with reference lines, the time-threshold panel, the evolution tree,
+  per-island trajectories, plus the glossary and context KPIs.
+
+  Whenever you're ready, the natural next step is the written report — the
+  deliverable's "short report explaining what kinds of algorithmic structure
+  made the task easy or difficult for AI-driven optimization." We've got
+  everything it needs:
+
+  - Results: Evolved GDSF 53.11% vs LRU 47.93% / LFU 50.36%, against the MIN
+  ceiling of 55.23% (71% of headroom captured).
+  - What made it easy/hard: the 64 MB workload was too LRU-friendly (1.5 pp
+  headroom) → shrinking to 16 MB created a real optimization target with a
+  flipped winner.
+  - Failure modes: the speed-bonus loophole (sub-O(1) policies slipping under
+  the 2 s threshold), the baseline-calibration boundary artifact, and
+  benchmark-overfitting risk.
+
+  Want me to draft that report next, or is there something else on the
+  visualization first?
+
+✻ Brewed for 7s
+
+❯ This is the requirements of the report: 1. an introduction to the project     
+  topic 2. a summary of the system design 3. implementation details 4.          
+  evaluation results and key findings and 5. a conclusion discussing the        
+  implications of your wokr for AI / data systems.                              
+
+● Let me pull the exact config and seed-program details so the system-design and
+  implementation sections are accurate rather than approximate.
+
+● Bash(cd ~/cache_evolution && echo "===== config.yaml =====" && cat config.yaml
+      && echo "" && echo "===== initial_program.py =====" && cat
+      initial_program.py)
+  ⎿  ===== config.yaml =====
+     max_iterations: 50
+     … +68 lines (ctrl+o to expand)
+
+● Everything checks out. Here's the report:
+
+● Write(REPORT.md)
+  ⎿  Wrote 262 lines to REPORT.md
+       2 # Evolving Cache Replacement Policies with OpenEvolve
+       3 *A mini-AlphaEvolve study: can an LLM-driven evolutionary loop i
+         s about AI-driven optimization of systems code?* does it teach u
+       4 
+       5 ---
+       7 ## 1. Introduction
+       8 
+          the policy thate critical path of nearly every data system, and
+      10 decides *what to evict when the cache is full* directly determin
+         es the hit rate —
+     … +417 lines (ctrl+o to expand)
+
+● I've written the full report to REPORT.md, covering all five required
+  sections:
+
+  1. Introduction — frames cache replacement as an algorithmic-structure-search
+  problem and states the core question (can an LLM loop rediscover/improve human
+  policies, and where does it fail).
+  2. System Design — the five decoupled parts (seed, evaluator, prompt,
+  controller, references), the MAP-Elites/island engine, the
+  LLM-as-mutation-operator, and the multi-objective reward.
+  3. Implementation Details — workload/trace format, the critical 64 MB→16 MB
+  cache-size decision, the seed LRU, evaluator/correctness, prompt engineering,
+  baselines + Belady/MIN, and the billing note.
+  4. Evaluation Results & Key Findings — the headline table (Evolved 0.5311 vs
+  LRU 0.4793 / LFU 0.5036, MIN ceiling 0.5523, 71% headroom captured), what the
+  GDSF policy does, the trajectory, and six findings (headroom decides success,
+  rediscovery vs invention, proxy-gaming, reward brittleness, overfitting, what
+  made it easy/hard).
+  5. Conclusion — implications for AI/data systems, centered on the "the
+  evaluator is the real artifact" thesis and what guardrails deployment would
+  need.
+
+  It closes with a reproduction appendix. The tone is honest about the
+  limitations (single-trace, constraint-gaming, calibration artifact) rather
+  than overselling the win — which is what the assignment's "analyze failure
+  cases" framing calls for.
+
+  A couple of things you may want to decide on:
+  - Embed figures? Right now it references the interactive
+  evolution_report.html. If the deliverable is a static document (PDF/printed),
+  I can export the key panels (the baseline bar + the score frontier) as static
+  PNGs and inline them — that needs kaleido installed alongside plotly.
+  - Length/format — it's written as markdown; if you need it as a specific
+  format (PDF, .docx, LaTeX) or a tighter length, I can adjust.
+
+  Want me to do either of those?
+
+✻ Crunched for 1m 59s
+
+※ recap: Goal: build and document the OpenEvolve cache-policy evolution project. We just finished the full report in REPORT.md covering all five required sections. Next: decide whether to embed static figures or adjust the report's format/length. (disable recaps in /config)
