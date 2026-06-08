@@ -173,8 +173,6 @@ def glossary_html():
           longest time. Simple and strong; this is the seed the evolution starts from.</li>
           <li><b>LFU</b> (Least Frequently Used) &mdash; evict the object with the fewest
           accesses so far.</li>
-          <li><b>FIFO</b> (First In First Out) &mdash; evict the oldest-inserted object,
-          regardless of how often it is used.</li>
         </ul>
 
         <p><b>GDSF</b> (Greedy-Dual-Size-Frequency) &mdash; the strategy the evolution
@@ -397,8 +395,7 @@ def generate_html_report(programs, log_path, output_path, baselines):
             y=[m(p, "combined_score") for p in programs],
             mode="markers",
             marker=dict(color=[p.get("metadata", {}).get("island", 0) for p in programs],
-                        colorscale="Viridis", size=9, showscale=True,
-                        colorbar=dict(title="Island", len=0.28, y=0.14)),
+                        colorscale="Viridis", size=9, showscale=False),
             text=[f"id {p['id'][:8]}  gen {p.get('generation', 0)}  "
                   f"score {m(p, 'combined_score'):.4f}" for p in programs],
             hoverinfo="text", showlegend=False),
