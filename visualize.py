@@ -250,10 +250,16 @@ def generate_html_report(programs, log_path, output_path, baselines):
     b = baselines or {}
     lru, lfu, mn = b.get("LRU"), b.get("LFU"), b.get("MIN")
 
+    if lru is not None and mn is not None and mn > lru:
+        captured = (best_hr - lru) / (mn - lru) * 100
+        bar_title = f"Hit Rate: Evolved vs Baselines — captures {captured:.0f}% of LRU→MIN headroom"
+    else:
+        bar_title = "Hit Rate: Evolved vs Baselines vs Optimal Ceiling"
+
     fig = make_subplots(
         rows=3, cols=2,
         subplot_titles=(
-            "Hit Rate: Evolved vs Baselines vs Optimal Ceiling",
+            bar_title,
             "Score Progress (best-so-far frontier)",
             "Hit Rate per Iteration (with baseline references)",
             "Execution Time per Iteration (scoring thresholds)",
@@ -265,8 +271,8 @@ def generate_html_report(programs, log_path, output_path, baselines):
             [{"type": "scatter"}, {"type": "scatter"}],
             [{"type": "scatter"}, {"type": "scatter"}],
         ],
-        vertical_spacing=0.10,
-        horizontal_spacing=0.10,
+        vertical_spacing=0.11,
+        horizontal_spacing=0.14,
     )
 
     # ---- (1,1) Headline: baseline comparison bar -------------------------- #
@@ -286,15 +292,11 @@ def generate_html_report(programs, log_path, output_path, baselines):
         row=1, col=1,
     )
     if lru is not None and mn is not None and mn > lru:
-        captured = (best_hr - lru) / (mn - lru) * 100
         fig.add_hline(y=lru, line_dash="dot", line_color="#8c8c8c", row=1, col=1)
         fig.add_hline(y=mn, line_dash="dot", line_color="#d62728", row=1, col=1)
-        fig.add_annotation(
-            text=f"captures {captured:.0f}% of LRU→MIN headroom",
-            xref="x domain", yref="y domain", x=0.5, y=1.02,
-            showarrow=False, font=dict(size=11, color="#333"), row=1, col=1,
-        )
-    fig.update_yaxes(title_text="Hit Rate", row=1, col=1)
+    # Headroom so the "outside" bar labels are not clipped at the top.
+    fig.update_yaxes(title_text="Hit Rate", range=[0, max(bar_vals) * 1.18],
+                     row=1, col=1)
 
     # ---- (1,2) Score frontier --------------------------------------------- #
     fig.add_trace(
@@ -344,7 +346,7 @@ def generate_html_report(programs, log_path, output_path, baselines):
         if val is not None:
             fig.add_hline(y=val, line_dash="dash", line_color=color,
                           annotation_text=f"{label} {val:.4f}",
-                          annotation_position="right",
+                          annotation_position="top left",
                           annotation_font_size=10, row=2, col=1)
     fig.update_xaxes(title_text="Iteration", row=2, col=1)
     fig.update_yaxes(title_text="Hit Rate", row=2, col=1)
@@ -361,13 +363,16 @@ def generate_html_report(programs, log_path, output_path, baselines):
     )
     fig.add_hline(y=FAST_THRESHOLD, line_dash="dash", line_color="#2ca02c",
                   annotation_text="2s — speed bonus below",
-                  annotation_position="right", annotation_font_size=10, row=2, col=2)
+                  annotation_position="bottom right", annotation_font_size=10,
+                  row=2, col=2)
     fig.add_hline(y=SLOW_THRESHOLD, line_dash="dot", line_color="#ff7f0e",
                   annotation_text="25s — penalty above",
-                  annotation_position="right", annotation_font_size=10, row=2, col=2)
+                  annotation_position="top left", annotation_font_size=10,
+                  row=2, col=2)
     fig.add_hline(y=TIMEOUT, line_dash="dash", line_color="#d62728",
                   annotation_text="30s — timeout",
-                  annotation_position="right", annotation_font_size=10, row=2, col=2)
+                  annotation_position="top right", annotation_font_size=10,
+                  row=2, col=2)
     fig.update_xaxes(title_text="Iteration", row=2, col=2)
     fig.update_yaxes(title_text="Time (seconds)", row=2, col=2)
 
@@ -423,8 +428,11 @@ def generate_html_report(programs, log_path, output_path, baselines):
 
     fig.update_layout(
         title="OpenEvolve Cache-Policy Evolution Report — 16MB, msr_hm_0 (50k)",
-        height=1300, width=1400, template="plotly_white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.04, xanchor="right", x=1),
+        title_x=0.5,
+        height=1400, autosize=True, template="plotly_white",
+        margin=dict(l=80, r=80, t=120, b=110),
+        legend=dict(orientation="h", yanchor="top", y=-0.05,
+                    xanchor="center", x=0.5),
     )
 
     # ---- Summary KPIs ----------------------------------------------------- #
@@ -469,8 +477,16 @@ def generate_html_report(programs, log_path, output_path, baselines):
     </div>
     """
 
-    fig_html = fig.to_html(include_plotlyjs=True)
-    fig_html = fig_html.replace("<body>", f"<body>{glossary_html()}{summary_html}")
+    page_title = (
+        '<h1 style="font-family:sans-serif; text-align:center; '
+        'padding:28px 16px 4px; margin:0; color:#1a2a3a;">'
+        'Evolving Cache Replacement Policies with OpenEvolve</h1>'
+    )
+
+    fig_html = fig.to_html(include_plotlyjs=True, default_width="100%",
+                           default_height="1400px")
+    fig_html = fig_html.replace(
+        "<body>", f"<body>{page_title}{glossary_html()}{summary_html}")
 
     with open(output_path, "w") as f:
         f.write(fig_html)
