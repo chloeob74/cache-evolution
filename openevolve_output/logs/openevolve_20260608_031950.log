@@ -1,0 +1,63 @@
+2026-06-08 03:19:50,613 - openevolve.controller - INFO - Logging to openevolve_output/logs/openevolve_20260608_031950.log
+2026-06-08 03:19:50,646 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: gemini-2.5-flash
+2026-06-08 03:19:50,646 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: gemini-2.5-flash (weight: 1.00)
+2026-06-08 03:19:50,655 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-06-08 03:19:50,656 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-06-08 03:19:50,659 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-06-08 03:19:50,659 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-06-08 03:19:50,659 - openevolve.database - INFO - Distributed 45 programs across 3 islands
+2026-06-08 03:19:50,660 - openevolve.database - INFO - Loaded database with 45 programs from ./openevolve_db
+2026-06-08 03:19:50,660 - openevolve.database - INFO - Island Status:
+2026-06-08 03:19:50,660 - openevolve.database - INFO -  * Island 0: 15 programs, best=0.6529, avg=0.4158, diversity=44.87, gen=0
+2026-06-08 03:19:50,660 - openevolve.database - INFO -    Island 1: 15 programs, best=0.6529, avg=0.3523, diversity=153.35, gen=0
+2026-06-08 03:19:50,660 - openevolve.database - INFO -    Island 2: 15 programs, best=0.6529, avg=0.4409, diversity=128.60, gen=0
+2026-06-08 03:19:50,661 - openevolve.database - INFO - Initialized program database with 45 programs
+2026-06-08 03:19:50,661 - openevolve.evaluator - INFO - Successfully loaded evaluation function from evaluate.py
+2026-06-08 03:19:50,661 - openevolve.evaluator - INFO - Initialized evaluator with evaluate.py
+2026-06-08 03:19:50,662 - openevolve.controller - INFO - Initialized OpenEvolve with initial_program.py
+2026-06-08 03:19:50,662 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 0 with 45 existing programs)
+2026-06-08 03:19:50,665 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-06-08 03:19:50,665 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-06-08 03:19:50,666 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-06-08 03:19:50,666 - openevolve.controller - INFO - Using island-based evolution with 3 islands
+2026-06-08 03:19:50,667 - openevolve.database - INFO - Island Status:
+2026-06-08 03:19:50,667 - openevolve.database - INFO -  * Island 0: 15 programs, best=0.6529, avg=0.4158, diversity=44.87, gen=0
+2026-06-08 03:19:50,667 - openevolve.database - INFO -    Island 1: 15 programs, best=0.6529, avg=0.3523, diversity=153.35, gen=0
+2026-06-08 03:19:50,667 - openevolve.database - INFO -    Island 2: 15 programs, best=0.6529, avg=0.4409, diversity=128.60, gen=0
+2026-06-08 03:19:50,667 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 0 for 50 iterations (total: 50)
+2026-06-08 03:19:51,460 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-06-08 03:20:12,193 - openevolve.process_parallel - WARNING - Iteration 0 error: No valid diffs found in response
+2026-06-08 03:20:30,504 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 5, 'diversity': 5}
+2026-06-08 03:20:30,504 - openevolve.process_parallel - INFO - Iteration 1: Program fa4a2163-fda0-4ed3-aa4b-f8038e6b45a1 (parent: 88e87376-ad5f-4401-b6da-097caaae5bc9) completed in 18.12s
+2026-06-08 03:20:30,505 - openevolve.process_parallel - INFO - Metrics: score=0.5953, hit_rate=0.5670, time=0.0250, combined_score=0.5953, artifacts={'final_size_bytes': 67097600, 'final_size_mb': 63.99, 'capacity_mb': 64.0, 'total_hits': 28350, 'total_misses': 21650, 'cache_items': 6755, 'time_factor': 1.05}
+2026-06-08 03:20:30,505 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 1: fa4a2163-fda0-4ed3-aa4b-f8038e6b45a1
+2026-06-08 03:20:51,066 - openevolve.process_parallel - WARNING - Iteration 2 error: No valid diffs found in response
+2026-06-08 03:20:59,354 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 0}
+2026-06-08 03:20:59,355 - openevolve.process_parallel - INFO - Iteration 3: Program 3ecb1c69-6711-4204-a086-1f5d943d5aba (parent: f15253f3-ea9c-45fe-b262-23dde60fe17e) completed in 8.28s
+2026-06-08 03:20:59,355 - openevolve.process_parallel - INFO - Metrics: score=0.5953, hit_rate=0.5670, time=0.0385, combined_score=0.5953, artifacts={'final_size_bytes': 67097600, 'final_size_mb': 63.99, 'capacity_mb': 64.0, 'total_hits': 28350, 'total_misses': 21650, 'cache_items': 6755, 'time_factor': 1.05}
+2026-06-08 03:21:18,460 - openevolve.process_parallel - WARNING - Iteration 4 error: No valid diffs found in response
+2026-06-08 03:21:37,198 - openevolve.process_parallel - WARNING - Iteration 5 error: No valid diffs found in response
+2026-06-08 03:21:54,647 - openevolve.process_parallel - WARNING - Iteration 6 error: No valid diffs found in response
+2026-06-08 03:22:16,807 - openevolve.process_parallel - WARNING - Iteration 7 error: No valid diffs found in response
+2026-06-08 03:22:36,518 - openevolve.process_parallel - WARNING - Iteration 8 error: No valid diffs found in response
+2026-06-08 03:22:57,767 - openevolve.process_parallel - WARNING - Iteration 9 error: No valid diffs found in response
+2026-06-08 03:23:12,324 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 0, 'diversity': 9}
+2026-06-08 03:23:12,325 - openevolve.process_parallel - INFO - Iteration 10: Program 2a2ebd2e-6b9f-4c03-8afc-d03b1ca9ce52 (parent: 63bb550c-426b-487c-a1f7-786511868fff) completed in 14.55s
+2026-06-08 03:23:12,325 - openevolve.process_parallel - INFO - Metrics: score=0.5953, hit_rate=0.5670, time=0.0300, combined_score=0.5953, artifacts={'final_size_bytes': 67097600, 'final_size_mb': 63.99, 'capacity_mb': 64.0, 'total_hits': 28350, 'total_misses': 21650, 'cache_items': 6755, 'time_factor': 1.05}
+2026-06-08 03:23:30,467 - openevolve.process_parallel - WARNING - Iteration 11 error: No valid diffs found in response
+2026-06-08 03:23:49,946 - openevolve.process_parallel - WARNING - Iteration 12 error: No valid diffs found in response
+2026-06-08 03:24:08,555 - openevolve.process_parallel - WARNING - Iteration 13 error: No valid diffs found in response
+2026-06-08 03:24:27,816 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 0, 'diversity': 9}
+2026-06-08 03:24:27,817 - openevolve.process_parallel - INFO - Iteration 14: Program 92173e42-6cf4-49e4-a4a4-79d44ced5bb1 (parent: b8242ae5-9a7b-4f87-ab1a-585683c1408d) completed in 19.26s
+2026-06-08 03:24:27,817 - openevolve.process_parallel - INFO - Metrics: score=0.5953, hit_rate=0.5670, time=0.0240, combined_score=0.5953, artifacts={'final_size_bytes': 67097600, 'final_size_mb': 63.99, 'capacity_mb': 64.0, 'total_hits': 28350, 'total_misses': 21650, 'cache_items': 6755, 'time_factor': 1.05}
+2026-06-08 03:24:46,854 - openevolve.process_parallel - WARNING - Iteration 15 error: No valid diffs found in response
+2026-06-08 03:25:05,542 - openevolve.process_parallel - WARNING - Iteration 16 error: No valid diffs found in response
+2026-06-08 03:25:23,358 - openevolve.process_parallel - WARNING - Iteration 17 error: No valid diffs found in response
+2026-06-08 03:25:23,542 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-06-08 03:25:23,542 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-06-08 03:25:23,546 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-06-08 03:25:23,547 - openevolve.process_parallel - INFO - ✅ Evolution completed - Shutdown requested
+2026-06-08 03:25:23,547 - openevolve.controller - INFO - Evolution stopped due to shutdown request
+2026-06-08 03:25:23,971 - openevolve.controller - INFO - Force exit requested - terminating immediately
+2026-06-08 03:25:30,040 - openevolve.controller - INFO - Force exit requested - terminating immediately
+2026-06-08 03:25:44,169 - openevolve.controller - INFO - Force exit requested - terminating immediately

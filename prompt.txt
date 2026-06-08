@@ -1,20 +1,17 @@
 You are evolving a cache replacement policy for a byte-based cache simulator.
-The cache is evaluated on real-world storage traces with 100,000+ requests.
+The cache is evaluated on real-world storage traces with 50,000+ requests.
 
 LEARNING FROM EVOLUTION HISTORY:
-- Pay close attention to the "Previous Attempts" section - learn what worked and what failed
-- Programs that timed out (score=0) likely used O(n) operations - avoid their patterns
+- Programs that timed out (score=0) used O(n) eviction over all cache items
 - Programs with high hit_rate but low score were too slow - their ideas may work with O(1) implementation
 - Look at "Top Performing Programs" for proven approaches to build upon
-- Check "Inspiration Programs" for diverse ideas that might combine well
 
 CRITICAL CONSTRAINT - ALGORITHMIC COMPLEXITY:
-- Eviction MUST be O(1) or O(log n) per operation
+- Eviction MUST be O(1) per operation
 - NEVER iterate over all cache items during eviction:
-  * NO: min(self.cache.keys(), key=...) 
+  * NO: min(self.cache.keys(), key=...)
   * NO: for item in self.cache: find_best()
   * NO: list(self.cache.items())[:n] then min()
-- The cache holds thousands of items; O(n) eviction causes timeouts and score of 0
 - OrderedDict provides O(1) move_to_end() and popitem() - use these
 - For priority-based eviction, use multiple OrderedDicts to maintain items in eviction order
 
@@ -26,17 +23,12 @@ WHAT YOU CAN MODIFY:
 
 MAKING TARGETED CHANGES:
 - Focus on small, targeted improvements rather than complete rewrites
-- If a previous attempt had a good idea but was slow, try to fix just the slow part
 - Test one hypothesis at a time to understand what improves hit rate
 
-PROMISING STRATEGIES TO EXPLORE:
-- SLRU (Segmented LRU): Two segments (probation/protected), promote on second access
-- LRU-2: Track second-to-last access time, evict by that (not most recent)
-- 2Q: Separate queues for first-time (A1) and repeat accesses (Am)
-- ARC-lite: Adaptive balance between recency and frequency queues
-- Frequency-aware: Use separate OrderedDicts per frequency level (freq=1, freq=2, freq>=3)
-
 EXAMPLE - SLRU (Segmented LRU) with O(1) operations:
+This uses two OrderedDicts: probation for new items, protected for items accessed twice+.
+New items enter probation. On second access, they promote to protected.
+Eviction always comes from probation first (LRU order), then protected.
 
     def __init__(self, capacity_bytes):
         self.capacity = capacity_bytes
@@ -45,26 +37,21 @@ EXAMPLE - SLRU (Segmented LRU) with O(1) operations:
         self.protected_size = 0
         self.hits = 0
         self.misses = 0
-        # Two segments: probation (new items) and protected (accessed twice+)
         self.probation = OrderedDict()  # obj_id -> obj_size
         self.protected = OrderedDict()  # obj_id -> obj_size
-    
+
     def access(self, obj_id, obj_size):
-        # Check protected segment first (hot items)
         if obj_id in self.protected:
             self.protected.move_to_end(obj_id)
             self.hits += 1
             return True
-        
-        # Check probation segment
+
         if obj_id in self.probation:
-            # Promote to protected on second access
             size = self.probation.pop(obj_id)
             self._add_to_protected(obj_id, size)
             self.hits += 1
             return True
-        
-        # Miss - add to probation
+
         self.misses += 1
         if obj_size > self.capacity:
             return False
@@ -72,17 +59,15 @@ EXAMPLE - SLRU (Segmented LRU) with O(1) operations:
         self.probation[obj_id] = obj_size
         self.current_size += obj_size
         return False
-    
+
     def _add_to_protected(self, obj_id, obj_size):
-        # Make room in protected if needed by demoting to probation
         while self.protected_size + obj_size > self.protected_capacity and self.protected:
             demoted_id, demoted_size = self.protected.popitem(last=False)
-            self.probation[demoted_id] = demoted_size  # demote to probation
+            self.probation[demoted_id] = demoted_size
         self.protected[obj_id] = obj_size
         self.protected_size += obj_size
-    
+
     def _evict_until_fits(self, needed_size):
-        # Evict from probation first (LRU order), then protected if needed
         while self.current_size + needed_size > self.capacity:
             if self.probation:
                 evicted_id, evicted_size = self.probation.popitem(last=False)
@@ -93,40 +78,19 @@ EXAMPLE - SLRU (Segmented LRU) with O(1) operations:
                 break
             self.current_size -= evicted_size
 
-KEY PATTERNS FOR O(1) FREQUENCY TRACKING:
-
-    # Instead of scanning for min frequency, maintain frequency buckets:
-    def __init__(self, capacity_bytes):
-        ...
-        self.freq_buckets = {1: OrderedDict(), 2: OrderedDict()}  # freq -> OrderedDict of obj_ids
-        self.obj_freq = {}  # obj_id -> current frequency
-        self.min_freq = 1
-    
-    # On hit, move to next frequency bucket:
-    def _increment_freq(self, obj_id):
-        freq = self.obj_freq[obj_id]
-        self.freq_buckets[freq].pop(obj_id)
-        if not self.freq_buckets[freq] and freq == self.min_freq:
-            self.min_freq += 1
-        new_freq = min(freq + 1, 3)  # cap at 3 to limit buckets
-        if new_freq not in self.freq_buckets:
-            self.freq_buckets[new_freq] = OrderedDict()
-        self.freq_buckets[new_freq][obj_id] = True
-        self.obj_freq[obj_id] = new_freq
-    
-    # Evict from lowest frequency bucket (O(1)):
-    def _evict_one(self):
-        bucket = self.freq_buckets[self.min_freq]
-        evicted_id, _ = bucket.popitem(last=False)
-        # ... handle size tracking
+STRATEGIES TO EXPLORE:
+- SLRU: Adjust protected_capacity ratio (try 0.4, 0.5, 0.7)
+- Frequency-aware: Use separate OrderedDicts per frequency level (freq=1, freq=2, freq>=3)
+- 2Q: Separate queues for first-time (A1) and repeat accesses (Am)
+- Size-aware: Track object sizes and prefer evicting larger items within LRU order
 
 SCORING:
 - Primary metric is hit rate (higher is better)
+- Programs below 47.93% hit rate receive a 50% score penalty
 - Fast execution (<2s): 5% bonus
 - Medium execution (2-25s): no penalty
 - Slow execution (>25s): graduated penalty up to 15%
 - Timeouts (>30s) result in score of 0
 
-The baseline is simple LRU with ~62% hit rate. Your goal is to exceed this.
-LFU-style approaches have achieved 63.8% hit rate but were too slow with O(n) eviction.
-An O(1) implementation of frequency-aware eviction could score higher.
+The cache holds 16MB. The baseline is simple LRU with 47.93% hit rate. The goal is to find policies that exceed this.
+Programs that reduce hit rate below 47.93% are penalized heavily in scoring.

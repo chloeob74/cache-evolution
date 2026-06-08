@@ -1,0 +1,35 @@
+2026-06-08 03:07:13,678 - openevolve.controller - INFO - Logging to openevolve_output/logs/openevolve_20260608_030713.log
+2026-06-08 03:07:13,727 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: gemini-2.5-flash
+2026-06-08 03:07:13,727 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: gemini-2.5-flash (weight: 1.00)
+2026-06-08 03:07:13,739 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-06-08 03:07:13,742 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-06-08 03:07:13,745 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-06-08 03:07:13,745 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-06-08 03:07:13,746 - openevolve.database - INFO - Distributed 45 programs across 3 islands
+2026-06-08 03:07:13,746 - openevolve.database - INFO - Loaded database with 45 programs from ./openevolve_db
+2026-06-08 03:07:13,747 - openevolve.database - INFO - Island Status:
+2026-06-08 03:07:13,747 - openevolve.database - INFO -  * Island 0: 15 programs, best=0.6529, avg=0.4158, diversity=44.87, gen=0
+2026-06-08 03:07:13,747 - openevolve.database - INFO -    Island 1: 15 programs, best=0.6529, avg=0.3523, diversity=153.35, gen=0
+2026-06-08 03:07:13,747 - openevolve.database - INFO -    Island 2: 15 programs, best=0.6529, avg=0.4409, diversity=128.60, gen=0
+2026-06-08 03:07:13,748 - openevolve.database - INFO - Initialized program database with 45 programs
+2026-06-08 03:07:13,748 - openevolve.evaluator - INFO - Successfully loaded evaluation function from evaluate.py
+2026-06-08 03:07:13,748 - openevolve.evaluator - INFO - Initialized evaluator with evaluate.py
+2026-06-08 03:07:13,748 - openevolve.controller - INFO - Initialized OpenEvolve with initial_program.py
+2026-06-08 03:07:13,749 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 0 with 45 existing programs)
+2026-06-08 03:07:13,754 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-06-08 03:07:13,755 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-06-08 03:07:13,755 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-06-08 03:07:13,756 - openevolve.controller - INFO - Using island-based evolution with 3 islands
+2026-06-08 03:07:13,757 - openevolve.database - INFO - Island Status:
+2026-06-08 03:07:13,757 - openevolve.database - INFO -  * Island 0: 15 programs, best=0.6529, avg=0.4158, diversity=44.87, gen=0
+2026-06-08 03:07:13,757 - openevolve.database - INFO -    Island 1: 15 programs, best=0.6529, avg=0.3523, diversity=153.35, gen=0
+2026-06-08 03:07:13,757 - openevolve.database - INFO -    Island 2: 15 programs, best=0.6529, avg=0.4409, diversity=128.60, gen=0
+2026-06-08 03:07:13,757 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 0 for 50 iterations (total: 50)
+2026-06-08 03:07:14,666 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-06-08 03:07:22,700 - openevolve.controller - INFO - Received signal 2, initiating graceful shutdown...
+2026-06-08 03:07:22,701 - openevolve.process_parallel - INFO - Graceful shutdown requested...
+2026-06-08 03:07:22,705 - openevolve.process_parallel - INFO - Shutdown requested, canceling remaining evaluations...
+2026-06-08 03:07:22,706 - openevolve.process_parallel - INFO - ✅ Evolution completed - Shutdown requested
+2026-06-08 03:07:22,706 - openevolve.database - INFO - Updated best program tracking from None to d8dcf242-bc68-4ad5-a1a3-ff56afd1b83c
+2026-06-08 03:07:22,706 - openevolve.controller - INFO - Evolution stopped due to shutdown request
+2026-06-08 03:07:24,265 - openevolve.controller - INFO - Force exit requested - terminating immediately

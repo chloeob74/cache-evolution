@@ -7,18 +7,19 @@ import zstandard as zstd
 
 
 TRACE_FILE = "msr_hm_0.oracleGeneral.zst"
-CACHE_SIZE_BYTES = 64 * 1024 * 1024  # 64MB
-MAX_RECORDS = 100000  # Sample size for faster evaluation
+CACHE_SIZE_BYTES = 16 * 1024 * 1024  # 16MB
+MAX_RECORDS = 50000  # Sample size for faster evaluation
 EVAL_TIMEOUT = 30  # Seconds before evaluation is aborted
 TIMEOUT_CHECK_INTERVAL = 10000  # Check timeout every N records
 FAST_THRESHOLD = 2.0  # Seconds - faster than this gets bonus
 SLOW_THRESHOLD = 25.0  # Seconds - only penalize very slow execution
+BASELINE_HIT_RATE = 0.4790  # just below LRU seed (0.47926) at 16MB / 50k so LRU isn't self-penalized (LFU=0.5036, MIN=0.5523)
 
 _cached_records = None
 
 
 def _parse_trace():
-    """Parse binary trace file in oracleGeneral format."""
+    """Parse binary trace file in oracleGeneral format using batch unpacking."""
     global _cached_records
     if _cached_records is not None:
         return _cached_records
@@ -30,14 +31,12 @@ def _parse_trace():
     with open(TRACE_FILE, 'rb') as f:
         decompressed = dctx.decompress(f.read())
     
-    records = []
-    num_records = len(decompressed) // record_size
-    for i in range(num_records):
-        offset = i * record_size
-        timestamp, obj_id, obj_size, next_access = struct.unpack_from(
-            record_format, decompressed, offset
-        )
-        records.append((obj_id, obj_size))
+    # Batch unpack all records at once using struct.iter_unpack on memoryview
+    mv = memoryview(decompressed)
+    records = [
+        (obj_id, obj_size)
+        for timestamp, obj_id, obj_size, next_access in struct.iter_unpack(record_format, mv)
+    ]
     
     _cached_records = records
     return records
@@ -84,30 +83,36 @@ def evaluate(program_path: str) -> dict:
         cache = cache_class(CACHE_SIZE_BYTES)
         
         start_time = time.time()
+        checks_remaining = 0
         for i, (obj_id, obj_size) in enumerate(records):
-            if i % TIMEOUT_CHECK_INTERVAL == 0 and time.time() - start_time > EVAL_TIMEOUT:
-                return {
-                    "score": 0.0,
-                    "hit_rate": 0.0,
-                    "time": EVAL_TIMEOUT,
-                    "combined_score": 0.0,
-                    "artifacts": {"error": "timeout", "processed_records": i}
-                }
+            if checks_remaining == 0:
+                if time.time() - start_time > EVAL_TIMEOUT:
+                    return {
+                        "score": 0.0,
+                        "hit_rate": 0.0,
+                        "time": EVAL_TIMEOUT,
+                        "combined_score": 0.0,
+                        "artifacts": {"error": "timeout", "processed_records": i}
+                    }
+                checks_remaining = TIMEOUT_CHECK_INTERVAL
+            checks_remaining -= 1
             cache.access(obj_id, obj_size)
         
         elapsed = time.time() - start_time
         hit_rate = cache.hit_rate()
         
         # Apply graduated time-based adjustment to score
-        # Fast (<2s): 5% bonus, Medium (2-25s): no penalty, Slow (>25s): graduated penalty
         if elapsed < FAST_THRESHOLD:
             time_factor = 1.05
         elif elapsed > SLOW_THRESHOLD:
-            # Graduated penalty: lose 2% per second over threshold, max 15% penalty
             penalty = min(0.15, (elapsed - SLOW_THRESHOLD) * 0.02)
             time_factor = 1.0 - penalty
         else:
             time_factor = 1.0
+        
+        # Heavy penalty for programs below baseline hit rate
+        if hit_rate < BASELINE_HIT_RATE:
+            time_factor *= 0.5
         
         adjusted_score = hit_rate * time_factor
         

@@ -1,15 +1,24 @@
 {
-  "id": "61ee9c89-5e5c-4175-a3b4-77ea655dc631",
-  "generation": 2,
-  "iteration": 0,
-  "timestamp": 1780767966.2038116,
-  "parent_id": "ef135ba3-fe89-4112-ac22-22d6ffd8f298",
+  "id": "519add6f-ca48-4f26-ae3d-0d7a157f44fb",
+  "generation": 4,
+  "iteration": 38,
+  "timestamp": 1780939651.6341183,
+  "parent_id": "d367a0bf-f032-4cf8-846f-fc91a2af1a25",
   "metrics": {
-    "score": 0.652911,
-    "hit_rate": 0.62182,
-    "time": 0.04714703559875488,
-    "combined_score": 0.652911
+    "score": 0.557613,
+    "hit_rate": 0.53106,
+    "time": 0.059720516204833984,
+    "combined_score": 0.557613,
+    "artifacts": {
+      "final_size_bytes": 16776192,
+      "final_size_mb": 16.0,
+      "capacity_mb": 16.0,
+      "total_hits": 26553,
+      "total_misses": 23447,
+      "cache_items": 4083,
+      "time_factor": 1.05
+    }
   },
   "language": "python",
-  "saved_at": 1780767999.0209606
+  "saved_at": 1780939881.8090718
 }

@@ -1,0 +1,45 @@
+2026-06-08 16:02:35,641 - openevolve.controller - INFO - Logging to openevolve_output/logs/openevolve_20260608_160235.log
+2026-06-08 16:02:35,651 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-06-08 16:02:35,697 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: claude-sonnet-4-6
+2026-06-08 16:02:35,697 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: claude-sonnet-4-6 (weight: 1.00)
+2026-06-08 16:02:35,711 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-06-08 16:02:35,712 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-06-08 16:02:35,712 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-06-08 16:02:35,712 - openevolve.database - INFO - Loaded database with 0 programs from ./openevolve_db
+2026-06-08 16:02:35,712 - openevolve.database - INFO - Island Status:
+2026-06-08 16:02:35,713 - openevolve.database - INFO -  * Island 0: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 16:02:35,713 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 16:02:35,713 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 16:02:35,713 - openevolve.database - INFO - Initialized program database with 0 programs
+2026-06-08 16:02:35,714 - openevolve.evaluator - INFO - Successfully loaded evaluation function from evaluate.py
+2026-06-08 16:02:35,714 - openevolve.evaluator - INFO - Initialized evaluator with evaluate.py
+2026-06-08 16:02:35,714 - openevolve.controller - INFO - Initialized OpenEvolve with initial_program.py
+2026-06-08 16:02:35,715 - openevolve.controller - INFO - Adding initial program to database
+2026-06-08 16:02:37,384 - openevolve.evaluator - INFO - Evaluated program 3da69e54-4026-4131-99f8-b6e53bd9dcce in 1.67s: score=0.2977, hit_rate=0.5670, time=0.0496, combined_score=0.2977, artifacts={'final_size_bytes': 67097600, 'final_size_mb': 63.99, 'capacity_mb': 64.0, 'total_hits': 28350, 'total_misses': 21650, 'cache_items': 6755, 'time_factor': 0.525}
+2026-06-08 16:02:37,385 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 5, 'diversity': 0}
+2026-06-08 16:02:37,390 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-06-08 16:02:37,391 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-06-08 16:02:37,391 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-06-08 16:02:37,392 - openevolve.controller - INFO - Using island-based evolution with 3 islands
+2026-06-08 16:02:37,392 - openevolve.database - INFO - Island Status:
+2026-06-08 16:02:37,392 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.2977, avg=0.2977, diversity=0.00, gen=0 (best: 3da69e54-4026-4131-99f8-b6e53bd9dcce)
+2026-06-08 16:02:37,392 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 16:02:37,392 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 16:02:37,393 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 1 for 3 iterations (total: 4)
+2026-06-08 16:02:38,557 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-06-08 16:03:06,159 - openevolve.database - INFO - New MAP-Elites cell occupied in island 0: {'complexity': 9, 'diversity': 5}
+2026-06-08 16:03:06,159 - openevolve.database - INFO - New best program aa2da905-8751-4e04-958e-588efa2155e2 replaces 3da69e54-4026-4131-99f8-b6e53bd9dcce (combined_score: 0.2977 → 0.2980, +0.0004)
+2026-06-08 16:03:06,160 - openevolve.process_parallel - INFO - Iteration 1: Program aa2da905-8751-4e04-958e-588efa2155e2 (parent: 3da69e54-4026-4131-99f8-b6e53bd9dcce) completed in 27.48s
+2026-06-08 16:03:06,160 - openevolve.process_parallel - INFO - Metrics: score=0.2980, hit_rate=0.5677, time=0.1822, combined_score=0.2980, artifacts={'final_size_bytes': 67108864, 'final_size_mb': 64.0, 'capacity_mb': 64.0, 'total_hits': 28385, 'total_misses': 21615, 'cache_items': 5310, 'time_factor': 0.525}
+2026-06-08 16:03:06,160 - openevolve.process_parallel - INFO - 🌟 New best solution found at iteration 1: aa2da905-8751-4e04-958e-588efa2155e2
+2026-06-08 16:03:29,568 - openevolve.database - INFO - New MAP-Elites cell occupied in island 1: {'complexity': 7, 'diversity': 0}
+2026-06-08 16:03:29,569 - openevolve.process_parallel - INFO - Iteration 2: Program e8081cf4-744f-4754-a4e3-f85f32de8dc0 (parent: 3da69e54-4026-4131-99f8-b6e53bd9dcce) completed in 23.41s
+2026-06-08 16:03:29,569 - openevolve.process_parallel - INFO - Metrics: score=0.0000, hit_rate=0.0000, time=0.0000, combined_score=0.0000, artifacts={'error': "property 'current_size' of 'EvolvedCache' object has no setter"}
+2026-06-08 16:03:50,434 - openevolve.database - INFO - New MAP-Elites cell occupied in island 2: {'complexity': 5, 'diversity': 0}
+2026-06-08 16:03:50,435 - openevolve.process_parallel - INFO - Iteration 3: Program 8f7b23da-169e-4c76-889d-2612818e960c (parent: 3da69e54-4026-4131-99f8-b6e53bd9dcce) completed in 20.86s
+2026-06-08 16:03:50,435 - openevolve.process_parallel - INFO - Metrics: score=0.2970, hit_rate=0.5657, time=0.0956, combined_score=0.2970, artifacts={'final_size_bytes': 67077120, 'final_size_mb': 63.97, 'capacity_mb': 64.0, 'total_hits': 28287, 'total_misses': 21713, 'cache_items': 5225, 'time_factor': 0.525}
+2026-06-08 16:03:50,436 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-06-08 16:03:50,497 - openevolve.process_parallel - INFO - Stopped process pool
+2026-06-08 16:03:50,498 - openevolve.controller - INFO - Using tracked best program: aa2da905-8751-4e04-958e-588efa2155e2
+2026-06-08 16:03:50,498 - openevolve.controller - INFO - Evolution complete. Best program has metrics: score=0.2980, hit_rate=0.5677, time=0.1822, combined_score=0.2980, artifacts={'final_size_bytes': 67108864, 'final_size_mb': 64.0, 'capacity_mb': 64.0, 'total_hits': 28385, 'total_misses': 21615, 'cache_items': 5310, 'time_factor': 0.525}
+2026-06-08 16:03:50,499 - openevolve.controller - INFO - Saved best program to openevolve_output/best/best_program.py with program info to openevolve_output/best/best_program_info.json

@@ -1,0 +1,38 @@
+2026-06-08 15:12:45,066 - openevolve.controller - INFO - Logging to openevolve_output/logs/openevolve_20260608_151245.log
+2026-06-08 15:12:45,076 - openevolve.controller - INFO - Set random seed to 42 for reproducibility
+2026-06-08 15:12:45,119 - openevolve.llm.openai - INFO - Initialized OpenAI LLM with model: openai/gpt-oss-120b:free
+2026-06-08 15:12:45,119 - openevolve.llm.ensemble - INFO - Initialized LLM ensemble with models: openai/gpt-oss-120b:free (weight: 1.00)
+2026-06-08 15:12:45,128 - openevolve.prompt.sampler - INFO - Initialized prompt sampler
+2026-06-08 15:12:45,129 - openevolve.prompt.sampler - INFO - Set custom templates: system=evaluator_system_message, user=None
+2026-06-08 15:12:45,130 - openevolve.database - INFO - Reconstructed islands: restored 0 programs to islands
+2026-06-08 15:12:45,130 - openevolve.database - INFO - No island assignments found, distributing programs across islands
+2026-06-08 15:12:45,130 - openevolve.database - INFO - Distributed 1 programs across 3 islands
+2026-06-08 15:12:45,130 - openevolve.database - INFO - Loaded database with 1 programs from ./openevolve_db
+2026-06-08 15:12:45,130 - openevolve.database - INFO - Island Status:
+2026-06-08 15:12:45,130 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.2977, avg=0.2977, diversity=0.00, gen=0
+2026-06-08 15:12:45,130 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 15:12:45,130 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 15:12:45,130 - openevolve.database - INFO - Initialized program database with 1 programs
+2026-06-08 15:12:45,131 - openevolve.evaluator - INFO - Successfully loaded evaluation function from evaluate.py
+2026-06-08 15:12:45,131 - openevolve.evaluator - INFO - Initialized evaluator with evaluate.py
+2026-06-08 15:12:45,131 - openevolve.controller - INFO - Initialized OpenEvolve with initial_program.py
+2026-06-08 15:12:45,131 - openevolve.controller - INFO - Skipping initial program addition (resuming from iteration 0 with 1 existing programs)
+2026-06-08 15:12:45,135 - openevolve.process_parallel - INFO - Initialized process parallel controller with 1 workers
+2026-06-08 15:12:45,135 - openevolve.process_parallel - INFO - Set max None tasks per child
+2026-06-08 15:12:45,136 - openevolve.process_parallel - INFO - Started process pool with 1 processes
+2026-06-08 15:12:45,136 - openevolve.controller - INFO - Using island-based evolution with 3 islands
+2026-06-08 15:12:45,136 - openevolve.database - INFO - Island Status:
+2026-06-08 15:12:45,137 - openevolve.database - INFO -  * Island 0: 1 programs, best=0.2977, avg=0.2977, diversity=0.00, gen=0
+2026-06-08 15:12:45,137 - openevolve.database - INFO -    Island 1: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 15:12:45,137 - openevolve.database - INFO -    Island 2: 0 programs, best=0.0000, avg=0.0000, diversity=0.00, gen=0
+2026-06-08 15:12:45,137 - openevolve.process_parallel - INFO - Starting process-based evolution from iteration 0 for 3 iterations (total: 3)
+2026-06-08 15:12:46,047 - openevolve.process_parallel - INFO - Early stopping disabled
+2026-06-08 15:13:04,230 - openevolve.process_parallel - WARNING - Iteration 0 error: LLM generation failed: 'NoneType' object is not subscriptable
+2026-06-08 15:13:21,663 - openevolve.process_parallel - WARNING - Iteration 1 error: LLM generation failed: 'NoneType' object is not subscriptable
+2026-06-08 15:13:39,248 - openevolve.process_parallel - WARNING - Iteration 2 error: LLM generation failed: 'NoneType' object is not subscriptable
+2026-06-08 15:13:39,248 - openevolve.process_parallel - INFO - ✅ Evolution completed - Maximum iterations reached
+2026-06-08 15:13:39,248 - openevolve.database - INFO - Updated best program tracking from None to bab787b9-6b4b-46c6-9230-5497590323a7
+2026-06-08 15:13:39,257 - openevolve.process_parallel - INFO - Stopped process pool
+2026-06-08 15:13:39,258 - openevolve.controller - INFO - Using tracked best program: bab787b9-6b4b-46c6-9230-5497590323a7
+2026-06-08 15:13:39,258 - openevolve.controller - INFO - Evolution complete. Best program has metrics: score=0.2977, hit_rate=0.5670, time=0.0354, combined_score=0.2977, artifacts={'final_size_bytes': 67097600, 'final_size_mb': 63.99, 'capacity_mb': 64.0, 'total_hits': 28350, 'total_misses': 21650, 'cache_items': 6755, 'time_factor': 0.525}
+2026-06-08 15:13:39,259 - openevolve.controller - INFO - Saved best program to openevolve_output/best/best_program.py with program info to openevolve_output/best/best_program_info.json
