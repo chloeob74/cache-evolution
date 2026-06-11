@@ -179,4 +179,4 @@ See [`REPORT.md`](REPORT.md) for the full analysis, including why the headroom o
 ## Acknowledgments
 
 - [OpenEvolve](https://github.com/codelion/openevolve) — the evolutionary coding framework.
-- Workload trace from the [MSR Cambridge]([https://www.usenix.org/conference/fast08](https://www.usenix.org/conference/fast-08/write-loading-practical-power-management-enterprise-storage)) block I/O traces, in the `oracleGeneral` format used by [libCacheSim](https://github.com/1a1a11a/libCacheSim).
+- Workload trace from the [MSR Cambridge](https://www.usenix.org/conference/fast-08/write-loading-practical-power-management-enterprise-storage) block I/O traces, in the `oracleGeneral` format used by [libCacheSim](https://github.com/1a1a11a/libCacheSim).
